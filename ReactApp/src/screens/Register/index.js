@@ -51,7 +51,7 @@ export default class Register extends Component {
                                 <Text style={{ color: '#5E656F' }}>Use 8 or more characters with a mix of letters, numbers, and symbols.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '10%' }}>
+                        <View style={{ marginTop: '5%'}}>
                             <View style={style.checkView}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
@@ -60,13 +60,13 @@ export default class Register extends Component {
                                 <Text> and </Text>
                                 <TouchableOpacity><Text style={style.policyText}>Privacy Policy.</Text></TouchableOpacity>
                             </View>
-                            <View style={style.checkView}>
+                            <View style={[style.checkView, {marginTop:'3%'}]}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
                                 <Text>  Subscribe for select product updates.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '5%' }}>
+                        <View style={{ marginTop: '5%'}}>
                             <View>
                                 <TouchableOpacity
                                     style={style.signUpBotton}
@@ -74,18 +74,18 @@ export default class Register extends Component {
                                     <Text style={{ color: 'white' }}>Sign Up</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: '3%' }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
                                 <Text style={{ fontSize: 17 }}>or</Text>
                             </View>
                             <View>
                                 <TouchableOpacity
-                                    style={[style.signUpBotton, { marginTop: '3%' }]}
+                                    style={[style.signUpBotton, {}]}
                                 >
                                     <Text style={{ color: 'white' }}>Sign Up with Google</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection:'row',justifyContent:'center',marginTop:'5%'}}>
+                        <View style={{flexDirection:'row',justifyContent:'center'}}>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text>Already have an account? </Text>
                                 <TouchableOpacity>
@@ -107,7 +107,7 @@ const style = StyleSheet.create({
     },
     signUp: {
         flexDirection: 'row',
-        marginTop: '15%',
+        marginTop: '10%',
         justifyContent: 'space-between',
         alignItems: 'center'
     },
@@ -146,8 +146,7 @@ const style = StyleSheet.create({
     },
     checkView: {
         flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: '5%'
+        alignItems: 'center'
     },
     policyText: {
         color: '#9CA5B4',
@@ -159,6 +158,6 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#2196F3',
-        padding: 15
+        padding: '4%'
     }
 })
