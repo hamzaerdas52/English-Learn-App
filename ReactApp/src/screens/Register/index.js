@@ -8,15 +8,21 @@ import {
     StyleSheet,
     TextInput
 } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+    listenOrientationChange as lor,
+    removeOrientationListener as rol
+  } from 'react-native-responsive-screen';
 
 export default class Register extends Component {
     render() {
         return (
-            <SafeAreaView style={[style.body,{backgroundColor:'yellow'}]}>
+            <SafeAreaView style={[style.body,{}]}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
-                        <View style={[style.signUp, {backgroundColor:'red'}]}>
+                        <View style={[style.signUp, {}]}>
                             <Text style={style.signUpText}>Sign Up</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text>Already have an account? </Text>
@@ -25,7 +31,7 @@ export default class Register extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={[style.form, {backgroundColor:'red'}]}>
+                        <View style={[style.form]}>
                             <View style={style.insideForm}>
                                 <Text>Full Name</Text>
                                 <TextInput
@@ -51,7 +57,7 @@ export default class Register extends Component {
                                 <Text style={{ color: '#5E656F' }}>Use 8 or more characters with a mix of letters, numbers, and symbols.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '5%' , backgroundColor:'red'}}>
+                        <View style={{ marginTop: hp('3%')}}>
                             <View style={style.checkView}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
@@ -66,7 +72,7 @@ export default class Register extends Component {
                                 <Text>  Subscribe for select product updates.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '5%', backgroundColor:'red'}}>
+                        <View style={{ marginTop: hp('3%')}}>
                             <View>
                                 <TouchableOpacity
                                     style={style.signUpBotton}
@@ -85,7 +91,7 @@ export default class Register extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection:'row',justifyContent:'center', backgroundColor:'red'}}>
+                        <View style={{flexDirection:'row',justifyContent:'center',marginTop: hp('0%')}}>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text>Already have an account? </Text>
                                 <TouchableOpacity>
@@ -107,9 +113,10 @@ const style = StyleSheet.create({
     },
     signUp: {
         flexDirection: 'row',
-        marginTop: '10%',
+        marginTop: hp('5%'),
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+
     },
     signUpText: {
         fontSize: 23,
@@ -118,10 +125,11 @@ const style = StyleSheet.create({
     logInButton: {
         fontWeight: '700',
         color: '#0071DF',
-        textDecorationLine: 'underline'
+        textDecorationLine: 'underline',
+
     },
     form: {
-        marginTop:'5%'
+        marginTop: hp('5%')
     },
     insideForm: {
         marginBottom: '5%'
