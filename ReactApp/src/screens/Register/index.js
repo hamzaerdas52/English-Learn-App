@@ -13,10 +13,10 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 export default class Register extends Component {
     render() {
         return (
-            <SafeAreaView style={style.body}>
+            <SafeAreaView style={[style.body,{backgroundColor:'yellow'}]}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
-                        <View style={style.signUp}>
+                        <View style={[style.signUp, {backgroundColor:'red'}]}>
                             <Text style={style.signUpText}>Sign Up</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text>Already have an account? </Text>
@@ -25,7 +25,7 @@ export default class Register extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={style.form}>
+                        <View style={[style.form, {backgroundColor:'red'}]}>
                             <View style={style.insideForm}>
                                 <Text>Full Name</Text>
                                 <TextInput
@@ -51,7 +51,7 @@ export default class Register extends Component {
                                 <Text style={{ color: '#5E656F' }}>Use 8 or more characters with a mix of letters, numbers, and symbols.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '5%'}}>
+                        <View style={{ marginTop: '5%' , backgroundColor:'red'}}>
                             <View style={style.checkView}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
@@ -66,7 +66,7 @@ export default class Register extends Component {
                                 <Text>  Subscribe for select product updates.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: '5%'}}>
+                        <View style={{ marginTop: '5%', backgroundColor:'red'}}>
                             <View>
                                 <TouchableOpacity
                                     style={style.signUpBotton}
@@ -85,7 +85,7 @@ export default class Register extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection:'row',justifyContent:'center'}}>
+                        <View style={{flexDirection:'row',justifyContent:'center', backgroundColor:'red'}}>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text>Already have an account? </Text>
                                 <TouchableOpacity>
@@ -121,7 +121,7 @@ const style = StyleSheet.create({
         textDecorationLine: 'underline'
     },
     form: {
-        marginTop: '9%'
+        marginTop:'5%'
     },
     insideForm: {
         marginBottom: '5%'
