@@ -24,8 +24,8 @@ export default class Register extends Component {
                     <View>
                         <View style={[style.signUp, {}]}>
                             <Text style={style.signUpText}>Sign Up</Text>
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text>Already have an account? </Text>
+                            <View style={{ flexDirection: 'row'}}>
+                                <Text style={{fontSize:hp('2.5%')}}>Already have an account? </Text>
                                 <TouchableOpacity>
                                     <Text style={style.logInButton}>Log In</Text>
                                 </TouchableOpacity>
@@ -33,19 +33,19 @@ export default class Register extends Component {
                         </View>
                         <View style={[style.form]}>
                             <View style={style.insideForm}>
-                                <Text>Full Name</Text>
+                                <Text style={{fontSize:hp('2%')}}>Full Name</Text>
                                 <TextInput
                                     style={style.textInput}
                                 />
                             </View>
                             <View style={style.insideForm}>
-                                <Text>Email<Text style={{ color: '#FF7A59' }}> *</Text></Text>
+                                <Text style={{fontSize:hp('2%')}}>Email<Text style={{ color: '#FF7A59', fontSize:hp('2%') }}> *</Text></Text>
                                 <TextInput
                                     style={style.textInput}
                                 />
                             </View>
                             <View style={style.insideForm}>
-                                <Text>Password<Text style={{ color: '#FF7A59' }}> *</Text></Text>
+                                <Text style={{fontSize:hp('2%')}}>Password<Text style={{ color: '#FF7A59', fontSize:hp('2%') }}> *</Text></Text>
                                 <TextInput
                                     style={style.textInput}
                                 />
@@ -54,46 +54,46 @@ export default class Register extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View>
-                                <Text style={{ color: '#5E656F' }}>Use 8 or more characters with a mix of letters, numbers, and symbols.</Text>
+                                <Text style={{ color: '#5E656F', fontSize:hp('2%') }}>Use 8 or more characters with a mix of letters, numbers, and symbols.</Text>
                             </View>
                         </View>
                         <View style={{ marginTop: hp('3%')}}>
                             <View style={style.checkView}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
-                                <Text>  I agree to the </Text>
+                                <Text style={{fontSize:hp('2.3%')}}>  I agree to the </Text>
                                 <TouchableOpacity><Text style={style.policyText}>Terms</Text></TouchableOpacity>
-                                <Text> and </Text>
+                                <Text style={{fontSize:hp('2.3%')}}> and </Text>
                                 <TouchableOpacity><Text style={style.policyText}>Privacy Policy.</Text></TouchableOpacity>
                             </View>
                             <View style={[style.checkView, {marginTop:'3%'}]}>
                                 <TouchableOpacity style={style.checkBox}
                                 />
-                                <Text>  Subscribe for select product updates.</Text>
+                                <Text style={{fontSize:hp('2.3%')}}>  Subscribe for select product updates.</Text>
                             </View>
                         </View>
-                        <View style={{ marginTop: hp('3%')}}>
+                        <View style={{ marginTop: hp('2.6%')}}>
                             <View>
                                 <TouchableOpacity
                                     style={style.signUpBotton}
                                 >
-                                    <Text style={{ color: 'white' }}>Sign Up</Text>
+                                    <Text style={{ color: 'white', fontSize:hp('2.3%') }}>Sign Up</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
-                                <Text style={{ fontSize: 17 }}>or</Text>
+                                <Text style={{ fontSize: hp('2.4%') }}>or</Text>
                             </View>
                             <View>
                                 <TouchableOpacity
                                     style={[style.signUpBotton, {}]}
                                 >
-                                    <Text style={{ color: 'white' }}>Sign Up with Google</Text>
+                                    <Text style={{ color: 'white', fontSize:hp('2.3%') }}>Sign Up with Google</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection:'row',justifyContent:'center',marginTop: hp('0%')}}>
+                        <View style={{flexDirection:'row',justifyContent:'center',marginTop: hp('0.1%')}}>
                             <View style={{ flexDirection: 'row' }}>
-                                <Text>Already have an account? </Text>
+                                <Text style={{ fontSize: hp('2.4%') }}>Already have an account? </Text>
                                 <TouchableOpacity>
                                     <Text style={style.logInButton}>Log In</Text>
                                 </TouchableOpacity>
@@ -109,7 +109,7 @@ export default class Register extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        paddingHorizontal: '5%'
+        paddingHorizontal: wp('5%')
     },
     signUp: {
         flexDirection: 'row',
@@ -119,23 +119,23 @@ const style = StyleSheet.create({
 
     },
     signUpText: {
-        fontSize: 23,
+        fontSize: wp('5%'),
         fontWeight: 'bold'
     },
     logInButton: {
         fontWeight: '700',
         color: '#0071DF',
         textDecorationLine: 'underline',
-
+        fontSize: hp('2.5%')
     },
     form: {
         marginTop: hp('5%')
     },
     insideForm: {
-        marginBottom: '5%'
+        marginBottom: hp('2.8%')
     },
     textInput: {
-        marginTop: '2%',
+        marginTop: hp('1%'),
         borderWidth: 1,
         borderColor: '#212121',
         borderRadius: 10,
@@ -148,8 +148,8 @@ const style = StyleSheet.create({
     },
     checkBox: {
         borderWidth: 1,
-        height: 20,
-        width: 20,
+        height: hp('3%'),
+        width: wp('5%'),
 
     },
     checkView: {
@@ -158,7 +158,8 @@ const style = StyleSheet.create({
     },
     policyText: {
         color: '#9CA5B4',
-        textDecorationLine: 'underline'
+        textDecorationLine: 'underline',
+        fontSize:hp('2.3%')
     },
     signUpBotton: {
         borderWidth: 1,
@@ -166,6 +167,6 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#2196F3',
-        padding: '4%'
+        padding: hp('2.2%')
     }
 })
