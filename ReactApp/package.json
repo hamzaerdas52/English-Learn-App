@@ -12,6 +12,10 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.13.4",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-firebase/app": "^11.0.0",
+    "@react-native-firebase/auth": "^11.0.0",
+    "@react-native-google-signin/google-signin": "^6.0.0",
+    "axios": "^0.21.1",
     "formik": "^2.2.6",
     "mobx": "^6.1.5",
     "mobx-react": "^7.1.0",
@@ -27,6 +31,7 @@
     "react-navigation-drawer": "^2.6.0",
     "react-navigation-stack": "^2.10.2",
     "react-navigation-tabs": "^2.10.1",
+    "yarn": "^1.22.10",
     "yup": "^0.32.8"
   },
   "devDependencies": {

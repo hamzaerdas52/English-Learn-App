@@ -80,18 +80,19 @@ export default class Register extends Component {
                                     <Text style={{ color: 'white', fontSize:hp('2.3%') }}>Sign Up</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center',padding: hp('1%')}}>
                                 <Text style={{ fontSize: hp('2.4%') }}>or</Text>
                             </View>
                             <View>
                                 <TouchableOpacity
                                     style={[style.signUpBotton, {}]}
+                                    onPress={()=>this.props.navigation.navigate('RegisterGoogle')}
                                 >
                                     <Text style={{ color: 'white', fontSize:hp('2.3%') }}>Sign Up with Google</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection:'row',justifyContent:'center',marginTop: hp('0.1%')}}>
+                        <View style={{flexDirection:'row',justifyContent:'center',marginTop: hp('0.5%')}}>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={{ fontSize: hp('2.4%') }}>Already have an account? </Text>
                                 <TouchableOpacity>
@@ -119,7 +120,7 @@ const style = StyleSheet.create({
 
     },
     signUpText: {
-        fontSize: wp('5%'),
+        fontSize: hp('2.5%'),
         fontWeight: 'bold'
     },
     logInButton: {
