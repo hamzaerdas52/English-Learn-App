@@ -9,6 +9,8 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 
+import Home from '../Home/index'
+
 GoogleSignin.configure({
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   webClientId: '447608861005-prrtt2v1n7el7oth3mg58gkphnsjj0ae.apps.googleusercontent.com',
@@ -100,8 +102,7 @@ export default class RegisterGoogle extends Component {
   constructor() {
     super()
     this.state = {
-      userGoogleInfo: {},
-      loaded: false
+      loaded: false,
     }
   }
 
@@ -111,9 +112,12 @@ export default class RegisterGoogle extends Component {
 
     // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    this.setState({loaded:true})
 
     // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
+    await auth().signInWithCredential(googleCredential);
+
+    (this.state.loaded) ? this.props.navigation.navigate('Home') : console.log('Giriş başarısız')
 
   }
 

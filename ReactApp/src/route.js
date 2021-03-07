@@ -21,7 +21,7 @@ const AuthStack = createStackNavigator({
         screen:Home
     }
 },{
-    initialRouteName:'RegisterGoogle'
+    initialRouteName:'Register'
 })
 
 export default createAppContainer(AuthStack)
