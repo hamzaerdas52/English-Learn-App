@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ReactApp</string>
+    <string name="facebook_app_id">1081519302342133</string>
+    <string name="fb_login_protocol_scheme">fb1081519302342133</string>
 </resources>

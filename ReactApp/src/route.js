@@ -4,24 +4,26 @@ import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 
 import Register from './screens/Register/index'
-import RegisterGoogle from './screens/Register/index1'
+import Login from './screens/Login/index'
 import Home from './screens/Home/index'
 
 const AuthStack = createStackNavigator({
+    Login:{
+        screen:Login,
+        navigationOptions:{
+            headerShown:false
+        }
+    },
     Register:{
         screen:Register,
         navigationOptions:{
             headerShown:false
         }
     },
-    RegisterGoogle:{
-        screen:RegisterGoogle
-    },
     Home:{
         screen:Home
     }
-},{
-    initialRouteName:'Register'
-})
+}
+)
 
 export default createAppContainer(AuthStack)
