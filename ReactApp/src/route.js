@@ -4,12 +4,19 @@ import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 
 import Register from './screens/Register/index'
-import Login from './screens/Login/index'
+import EnLogin from './screens/Login/EnglishIndex'
+import TrLogin from './screens/Login/TurkishIndex'
 import Home from './screens/Home/index'
 
 const AuthStack = createStackNavigator({
-    Login:{
-        screen:Login,
+    EnLogin:{
+        screen:EnLogin,
+        navigationOptions:{
+            headerShown:false
+        }
+    },
+    TrLogin:{
+        screen:TrLogin,
         navigationOptions:{
             headerShown:false
         }
