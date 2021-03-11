@@ -260,7 +260,7 @@ export default class Login extends Component {
                                 <View style={{ flexDirection: 'row' }}>
                                     <Text style={{ fontSize: hp('2.4%') }}>Hesabınız yok mu? </Text>
                                     <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('Register')}
+                                        onPress={() => this.props.navigation.navigate('TrRegister')}
                                     >
                                         <Text style={style.logInButton}>Kayıt Ol</Text>
                                     </TouchableOpacity>
