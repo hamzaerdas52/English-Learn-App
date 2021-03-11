@@ -8,7 +8,16 @@ import EnLogin from './screens/Login/EnglishIndex'
 import TrLogin from './screens/Login/TurkishIndex'
 import Home from './screens/Home/index'
 
+import Index from './screens/Login/index'
+
 const AuthStack = createStackNavigator({
+    // Index:{
+    //     screen:Index,
+    //     navigationOptions:{
+    //         headerShown:false,
+    //     }
+    // },
+
     EnLogin:{
         screen:EnLogin,
         navigationOptions:{
