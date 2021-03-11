@@ -3,7 +3,8 @@ import React from 'react'
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 
-import Register from './screens/Register/index'
+import EnRegister from './screens/Register/EnglishIndex'
+import TrRegister from './screens/Register/TurkishIndex'
 import EnLogin from './screens/Login/EnglishIndex'
 import TrLogin from './screens/Login/TurkishIndex'
 import Home from './screens/Home/index'
@@ -30,8 +31,14 @@ const AuthStack = createStackNavigator({
             headerShown:false
         }
     },
-    Register:{
-        screen:Register,
+    EnRegister:{
+        screen:EnRegister,
+        navigationOptions:{
+            headerShown:false
+        }
+    },
+    TrRegister:{
+        screen:TrRegister,
         navigationOptions:{
             headerShown:false
         }

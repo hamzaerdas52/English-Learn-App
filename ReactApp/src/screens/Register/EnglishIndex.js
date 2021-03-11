@@ -19,15 +19,11 @@ import {
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
 
-import axios from 'axios'
-
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
 
 import auth from '@react-native-firebase/auth';
-
-import { LoginManager, AccessToken } from 'react-native-fbsdk'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -38,19 +34,19 @@ GoogleSignin.configure({
     accountName: '',
 });
 
-export default class Login extends Component {
+export default class Register extends Component {
 
     constructor() {
         super()
         this.state = {
             hidePassword: true,
+            borderColorName: '',
             borderColorEmail: '',
             borderColorPassword: '',
             borderColorRed: 'red',
             borderColorBlack: 'black',
-            turkce: false,
             loaded: false,
-            isTurkish : false
+
         }
     }
 
@@ -69,29 +65,6 @@ export default class Login extends Component {
 
     }
 
-    onFacebookButtonPress = async () => {
-        //Attempt login with permissions
-        const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-      
-        if (result.isCancelled) {
-          throw 'User cancelled the login process';
-        }
-      
-        //Once signed in, get the users AccesToken
-        const data = await AccessToken.getCurrentAccessToken();
-      
-        if (!data) {
-          throw 'Something went wrong obtaining access token';
-        }
-      
-        //Create a Firebase credential with the AccessToken
-        const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-      
-        //Sign-in the user with the credential
-        await auth().signInWithCredential(facebookCredential);
-        console.log('Facebook ile girildi')
-      }
-
     _handleSubmit = (values) => {
         console.log(values.fullName)
         console.log(values.email)
@@ -99,7 +72,12 @@ export default class Login extends Component {
     }
 
     _renkDegisim = (values) => {
-        console.log(values.email)
+        if (values.fullName == '') {
+            this.setState({ borderColorName: this.state.borderColorRed })
+        }
+        else {
+            this.setState({ borderColorName: this.state.borderColorBlack })
+        }
         if (values.email == '') {
             this.setState({ borderColorEmail: this.state.borderColorRed })
         }
@@ -115,52 +93,36 @@ export default class Login extends Component {
 
     }
 
-    fetchUser = () => {
-        const url = `http://127.0.0.1:5000/login`
-        axios({
-            method:'post',
-            url:url,
-            data:{
-                'username':1,
-                'password':'Jessa'
-            }
-        })
-        .then((res)=>console.log(res))
-        .catch((error)=>console.log(error))
-    }
-    //requests.post("http://127.0.0.1:5000/login",json={"username": 1, "password": "Jessa"})
-
-
-
     render() {
-        const { turkce } = this.state
         return (
-            <SafeAreaView style={style.body}>
+            <SafeAreaView style={[style.body, {}]}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
                         <View style={style.header}>
                             <View style={style.flag_view}>
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('TrLogin')}
+                                    onPress={() => this.props.navigation.navigate('TrRegister')}
                                 >
                                     <Image style={style.flag} source={require('../../image/turkey.png')} />
                                 </TouchableOpacity>
                             </View>
                             <View style={style.logo_area}>
-                                <Image style={{width:wp('40%'),height:hp('30%'),resizeMode:'contain'}} source={require('../../image/LOGO.png')} />
+                                <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
                             </View>
                             <View style={style.signUp}>
-                                <Text style={style.signUpText}>Login</Text>
+                                <Text style={style.signUpText}>Sign Up</Text>
                             </View>
                         </View>
                         <View style={style.footer}>
                             <Formik
                                 initialValues={{
+                                    fullName: '',
                                     email: '',
                                     password: ''
                                 }}
                                 onSubmit={this._renkDegisim}
                                 validationSchema={Yup.object().shape({
+                                    //fullName: Yup.string().required('Name is required'),
                                     // email: Yup.string().email().required('Email is required'),
                                     // password: Yup.string().required('Password is required')
                                 })}
@@ -174,7 +136,15 @@ export default class Login extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Email</Text>
+                                                <Text style={{ fontSize: hp('2%') }}>Full Name<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
+                                                <TextInput
+                                                    value={values.fullName}
+                                                    onChangeText={handleChange('fullName')}
+                                                    style={[style.textInput, { borderColor: this.state.borderColorName }]}
+                                                />
+                                            </View>
+                                            <View style={style.insideForm}>
+                                                <Text style={{ fontSize: hp('2%') }}>Email<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.email}
                                                     onChangeText={handleChange('email')}
@@ -182,7 +152,7 @@ export default class Login extends Component {
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Password</Text>
+                                                <Text style={{ fontSize: hp('2%') }}>Password<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.password}
                                                     onChangeText={handleChange('password')}
@@ -196,19 +166,15 @@ export default class Login extends Component {
                                                     <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
                                                 </TouchableOpacity>
                                             </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                                <TouchableOpacity>
-                                                    <Text style={{fontSize:hp('2%'),fontWeight:'700',color:'#263238'}}>Forget Password?</Text>
-                                                </TouchableOpacity>
-                                            </View>
                                         </View>
+                                        
                                         <View style={{ marginTop: hp('2.6%') }}>
                                             <View>
                                                 <TouchableOpacity
                                                     style={style.signUpBotton}
-                                                    onPress={ handleSubmit }
+                                                    onPress={handleSubmit}
                                                 >
-                                                    <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Login</Text>
+                                                    <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Sign Up</Text>
                                                 </TouchableOpacity>
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('1%') }}>
@@ -216,9 +182,7 @@ export default class Login extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
                                                 <View>
-                                                    <TouchableOpacity
-                                                        onPress={() => this.onGoogleButtonPress()}
-                                                    >
+                                                    <TouchableOpacity onPress={() => this.onGoogleButtonPress().then(() => alert('Google ile giriş yapıldı'))}>
                                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                             <Image style={{ width: wp('7%'), height: hp('4%') }} source={require('../../icons/icons8-google-240.png')} />
                                                             <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Google </Text>
@@ -226,10 +190,7 @@ export default class Login extends Component {
                                                     </TouchableOpacity>
                                                 </View>
                                                 <View>
-                                                    <TouchableOpacity
-                                                        onPress={()=>this.onFacebookButtonPress()}
-                                                    
-                                                    >
+                                                    <TouchableOpacity>
                                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                             <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
                                                             <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Facebook </Text>
@@ -244,11 +205,11 @@ export default class Login extends Component {
                             </Formik>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding:25 }}>
                                 <View style={{ flexDirection: 'row' }}>
-                                    <Text style={{ fontSize: hp('2.4%') }}>Don't have an account? </Text>
+                                    <Text style={{ fontSize: hp('2.4%') }}>Already have an account? </Text>
                                     <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('EnRegister')}
+                                        onPress={() => this.props.navigation.navigate('EnLogin')}
                                     >
-                                        <Text style={style.logInButton}>Sign Up</Text>
+                                        <Text style={style.logInButton}>Login</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -264,19 +225,12 @@ const style = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor:'#00cccc'
-        //#00B7EB
     },
     signUp: {
         flexDirection: 'row',
-        marginTop: hp('1%'),
         justifyContent: 'center',
         alignItems: 'center',
 
-    },
-    logo_area:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
     },
     signUpText: {
         fontSize: hp('3%'),
@@ -289,7 +243,7 @@ const style = StyleSheet.create({
         fontSize: hp('2.5%')
     },
     form: {
-        marginTop: hp('5%')
+        marginTop: hp('3%')
     },
     insideForm: {
         marginBottom: hp('2.8%')
@@ -305,21 +259,6 @@ const style = StyleSheet.create({
         right: '5%',
         top: '52%'
     },
-    checkBox: {
-        borderWidth: 1,
-        height: hp('3%'),
-        width: wp('5%'),
-
-    },
-    checkView: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    policyText: {
-        color: '#9CA5B4',
-        textDecorationLine: 'underline',
-        fontSize: hp('2.3%')
-    },
     signUpBotton: {
         borderWidth: 1,
         borderRadius: 10,
@@ -328,15 +267,6 @@ const style = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#2196F3',
         padding: hp('2.2%')
-    },
-    footer:{
-        marginTop:hp('4%'),
-        paddingHorizontal:wp('10%'),
-        borderTopLeftRadius:40,
-        borderTopRightRadius:40,
-        backgroundColor:'white'
-    },
-    header:{
     },
     flag:{
         resizeMode:'contain',
@@ -347,5 +277,17 @@ const style = StyleSheet.create({
         position:'absolute',
         flexDirection:'row',
         right:wp('3%')
+    },
+    logo_area:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    footer:{
+        marginTop:hp('4%'),
+        paddingHorizontal:wp('10%'),
+        borderTopLeftRadius:40,
+        borderTopRightRadius:40,
+        backgroundColor:'white'
     }
 })
