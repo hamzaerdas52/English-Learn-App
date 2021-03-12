@@ -1,36 +1,33 @@
-import React, { Component, useState } from 'react'
+import React, { Component} from 'react'
 import { 
-    Text, 
-    View, 
-    Animated, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Button, 
-    Image, 
-    Easing,
-    AppRegistry,
-    TouchableHighlight,
+    Animated,
+    Image,
     ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
 } from 'react-native'
-
 
 export default class index extends Component {
 
     constructor(props){
         super(props);
-        
+        this.state = {
+            
+        }
     }
     
-    componentDidMount(){
-        
-    }
-    
-
     render() {
+        
         return (
             <View>
                 
             </View>
-        )
+        );
     }
 }
+
+const styles = StyleSheet.create({
+    
+})

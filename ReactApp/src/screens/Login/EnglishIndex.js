@@ -7,7 +7,9 @@ import {
     TouchableOpacity,
     StyleSheet,
     TextInput,
-    Image
+    Image,
+    Animated,
+    Easing,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Formik } from 'formik'
@@ -20,6 +22,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import axios from 'axios'
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 
 import {
     GoogleSignin
@@ -52,7 +55,23 @@ export default class Login extends Component {
             loaded: false,
             isTurkish : false
         }
+        this.eyeAnimation= new Animated.Value(0)
     }
+
+    componentDidMount() {
+        //this.playAnimation()
+    }
+
+    // playAnimation = () => {
+    //     this.eyeAnimation.setValue(0)
+    //     Animated.timing(this.eyeAnimation, {
+    //         toValue:1,
+    //         duration: 200,
+    //         easing: Easing.linear,
+    //         useNativeDriver: false,
+    //         delay:1500
+    //     }).start(() => this.playAnimation())
+    // }
 
     onGoogleButtonPress = async () => {
         // Get the users ID token
@@ -134,6 +153,12 @@ export default class Login extends Component {
 
     render() {
         const { turkce } = this.state
+
+        // const opacity = this.eyeAnimation.interpolate({
+        //     inputRange:[0, 0.5, 1],
+        //     outputRange:[0, 1, 0]
+        // })
+
         return (
             <SafeAreaView style={style.body}>
                 <ScrollView showsVerticalScrollIndicator={false}>
@@ -147,8 +172,23 @@ export default class Login extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={style.logo_area}>
+                                
                                 <Image style={{width:wp('40%'),height:hp('30%'),resizeMode:'contain'}} source={require('../../image/LOGO.png')} />
+                                
+                                <EyeAnimation/>
+                                {/* <Animated.View
+                                    style={{
+                                        width:wp('4%'),
+                                        height:hp('1.2%'),
+                                        backgroundColor:'white',
+                                        position:'absolute',
+                                        left: 161,
+                                        top: 47.5,
+                                        opacity
+                                        }}
+                                /> */}
                             </View>
+                            
                             <View style={style.signUp}>
                                 <Text style={style.signUpText}>Login</Text>
                             </View>
@@ -263,7 +303,7 @@ export default class Login extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#00cccc'
+        backgroundColor:'#00B7EB'
         //#00B7EB
     },
     signUp: {

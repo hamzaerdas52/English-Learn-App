@@ -18,7 +18,7 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
@@ -46,7 +46,9 @@ export default class Register extends Component {
             borderColorRed: 'red',
             borderColorBlack: 'black',
             loaded: false,
-
+            hidePassword2: true,
+            borderColorPassword2: '',
+            nextPage: false
         }
     }
 
@@ -90,7 +92,29 @@ export default class Register extends Component {
         else {
             this.setState({ borderColorPassword: this.state.borderColorBlack })
         }
+        if (values.password2 == '') {
+            this.setState({ borderColorPassword2: this.state.borderColorRed })
+        }
+        else {
+            this.setState({ borderColorPassword2: this.state.borderColorBlack })
+        }
 
+    }
+    isEquels = (values) => {
+        if (values.password == values.password2) {
+            console.log(values.password, ' ', values.password2)
+
+            if (values.fullName == '' && values.email == '' && values.password == '' && values.password2 == '') {
+                alert('hepsini doldur')
+            }
+            else {
+                this.setState({ nextPage: true })
+            }
+        }
+
+        else {
+            alert('false')
+        }
     }
 
     render() {
@@ -99,15 +123,9 @@ export default class Register extends Component {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View>
                         <View style={style.header}>
-                            <View style={style.flag_view}>
-                                <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('EnRegister')}
-                                >
-                                    <Image style={style.flag} source={require('../../image/united-kingdom.png')} />
-                                </TouchableOpacity>
-                            </View>
                             <View style={style.logo_area}>
                                 <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
+                                <EyeAnimation/>
                             </View>
                             <View style={style.signUp}>
                                 <Text style={style.signUpText}>Kayıt Ol</Text>
@@ -118,9 +136,14 @@ export default class Register extends Component {
                                 initialValues={{
                                     fullName: '',
                                     email: '',
-                                    password: ''
+                                    password: '',
+                                    password2: ''
                                 }}
-                                onSubmit={this._renkDegisim}
+                                onSubmit={(values) => {
+                                    this._renkDegisim(values), this.isEquels(values),
+                                    (this.state.nextPage) ?
+                                        this.props.navigation.navigate('Home') : null
+                                }}
                                 validationSchema={Yup.object().shape({
                                     //fullName: Yup.string().required('Name is required'),
                                     // email: Yup.string().email().required('Email is required'),
@@ -136,7 +159,7 @@ export default class Register extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Ad Soyad<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
+                                                <Text style={{ fontSize: hp('2%') }}>Kullanıcı Adı<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.fullName}
                                                     onChangeText={handleChange('fullName')}
@@ -166,8 +189,23 @@ export default class Register extends Component {
                                                     <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
                                                 </TouchableOpacity>
                                             </View>
+                                            <View style={style.insideForm}>
+                                                <Text style={{ fontSize: hp('2%') }}>Tekrar Şifre<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
+                                                <TextInput
+                                                    value={values.password2}
+                                                    onChangeText={handleChange('password2')}
+                                                    style={[style.textInput, { borderColor: this.state.borderColorPassword2 }]}
+                                                    secureTextEntry={this.state.hidePassword2}
+                                                />
+                                                <TouchableOpacity
+                                                    style={style.Icon}
+                                                    onPress={() => this.setState({ hidePassword2: !this.state.hidePassword2 })}
+                                                >
+                                                    <Icon name={(this.state.hidePassword2) ? 'eye-slash' : 'eye'} size={20} />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
-                                        
+
                                         <View style={{ marginTop: hp('2.6%') }}>
                                             <View>
                                                 <TouchableOpacity
@@ -203,7 +241,7 @@ export default class Register extends Component {
                                 )
                                 }
                             </Formik>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding:25 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding: 25 }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Text style={{ fontSize: hp('2.4%') }}>Hesabın var mı? </Text>
                                     <TouchableOpacity
@@ -224,7 +262,7 @@ export default class Register extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#00cccc'
+        backgroundColor: '#00cccc'
     },
     signUp: {
         flexDirection: 'row',
@@ -268,26 +306,26 @@ const style = StyleSheet.create({
         backgroundColor: '#2196F3',
         padding: hp('2.2%')
     },
-    flag:{
-        resizeMode:'contain',
-        width:wp('7%'),
-        height:hp('7%')
+    flag: {
+        resizeMode: 'contain',
+        width: wp('7%'),
+        height: hp('7%')
     },
-    flag_view:{
-        position:'absolute',
-        flexDirection:'row',
-        right:wp('3%')
+    flag_view: {
+        position: 'absolute',
+        flexDirection: 'row',
+        right: wp('3%')
     },
-    logo_area:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
+    logo_area: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    footer:{
-        marginTop:hp('4%'),
-        paddingHorizontal:wp('10%'),
-        borderTopLeftRadius:40,
-        borderTopRightRadius:40,
-        backgroundColor:'white'
+    footer: {
+        marginTop: hp('4%'),
+        paddingHorizontal: wp('10%'),
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        backgroundColor: 'white'
     }
 })

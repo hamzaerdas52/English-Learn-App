@@ -20,6 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import axios from 'axios'
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 
 import {
     GoogleSignin
@@ -154,6 +155,7 @@ export default class Login extends Component {
                             </View>
                             <View style={style.logo_area}>
                                 <Image style={{width:wp('40%'),height:hp('30%'),resizeMode:'contain'}} source={require('../../image/LOGO.png')} />
+                                <EyeAnimation/>
                             </View>
                             {this.state.isClose ? 
                             <View
@@ -277,7 +279,7 @@ export default class Login extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#00cccc'
+        backgroundColor:'#eb4a42'
         //#00B7EB
     },
     signUp: {
