@@ -39,8 +39,8 @@ export default class eyeAnimation extends Component {
                                         height:hp('1.2%'),
                                         backgroundColor:'white',
                                         position:'absolute',
-                                        left: -90,
-                                        top: -41,
+                                        right: wp('21.5'),
+                                        top: hp('-6'),
                                         opacity
                                         }}
                                 />

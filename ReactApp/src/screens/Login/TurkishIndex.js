@@ -19,7 +19,6 @@ import {
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
 
-import axios from 'axios'
 import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 
 import {
@@ -29,6 +28,8 @@ import {
 import auth from '@react-native-firebase/auth';
 
 import { LoginManager, AccessToken } from 'react-native-fbsdk'
+
+import LoginUser from '../../methods/Login/loginUser'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -117,27 +118,9 @@ export default class Login extends Component {
 
     }
 
-    _visible = () => {
-        var date = new Date().getSeconds();
-        console.log(date)
+    fetchUser = (values) => {
+        LoginUser(values.email, values.password)
     }
-
-    fetchUser = () => {
-        const url = `http://127.0.0.1:5000/login`
-        axios({
-            method:'post',
-            url:url,
-            data:{
-                'username':1,
-                'password':'Jessa'
-            }
-        })
-        .then((res)=>console.log(res))
-        .catch((error)=>console.log(error))
-    }
-    //requests.post("http://127.0.0.1:5000/login",json={"username": 1, "password": "Jessa"})
-
-
 
     render() {
         const { turkce } = this.state
@@ -175,7 +158,7 @@ export default class Login extends Component {
                                     email: '',
                                     password: ''
                                 }}
-                                onSubmit={this._renkDegisim}
+                                onSubmit={(values) => {this._renkDegisim(values), this.fetchUser(values)}}
                                 validationSchema={Yup.object().shape({
                                     // email: Yup.string().email().required('Email is required'),
                                     // password: Yup.string().required('Password is required')

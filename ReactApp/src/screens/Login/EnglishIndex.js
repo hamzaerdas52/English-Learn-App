@@ -30,7 +30,9 @@ import {
 
 import auth from '@react-native-firebase/auth';
 
-import { LoginManager, AccessToken } from 'react-native-fbsdk'
+import { LoginManager, AccessToken } from 'react-native-fbsdk' 
+
+import LoginUser from '../../methods/Login/loginUser'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -118,7 +120,6 @@ export default class Login extends Component {
     }
 
     _renkDegisim = (values) => {
-        console.log(values.email)
         if (values.email == '') {
             this.setState({ borderColorEmail: this.state.borderColorRed })
         }
@@ -134,22 +135,20 @@ export default class Login extends Component {
 
     }
 
-    fetchUser = () => {
-        const url = `http://127.0.0.1:5000/login`
+    fetchUser = (values) => {
+        //LoginUser(values.email, values.password)
+        const url = `http://wordlib-env.eba-qaxzbsq8.us-east-1.elasticbeanstalk.com/login`
         axios({
             method:'post',
             url:url,
             data:{
-                'username':1,
-                'password':'Jessa'
+                'email': values.email,
+                'password' : values.password
             }
         })
-        .then((res)=>console.log(res))
-        .catch((error)=>console.log(error))
+        .then((res)=>{console.log(res.data['Token']), this.props.navigation.navigate('Home')})
+        .catch((error)=>alert(error.response.data['Error Message']))
     }
-    //requests.post("http://127.0.0.1:5000/login",json={"username": 1, "password": "Jessa"})
-
-
 
     render() {
         const { turkce } = this.state
@@ -199,7 +198,7 @@ export default class Login extends Component {
                                     email: '',
                                     password: ''
                                 }}
-                                onSubmit={this._renkDegisim}
+                                onSubmit={(values) => {this._renkDegisim(values), this.fetchUser(values)}}
                                 validationSchema={Yup.object().shape({
                                     // email: Yup.string().email().required('Email is required'),
                                     // password: Yup.string().required('Password is required')
@@ -246,7 +245,7 @@ export default class Login extends Component {
                                             <View>
                                                 <TouchableOpacity
                                                     style={style.signUpBotton}
-                                                    onPress={ handleSubmit }
+                                                    onPress={handleSubmit}
                                                 >
                                                     <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Login</Text>
                                                 </TouchableOpacity>

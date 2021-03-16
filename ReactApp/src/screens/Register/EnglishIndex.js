@@ -25,6 +25,9 @@ import {
 
 import auth from '@react-native-firebase/auth';
 import EyeAnimation from '../../components/animationComponents/eyeAnimation';
+
+import axios from 'axios'
+
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     webClientId: '447608861005-prrtt2v1n7el7oth3mg58gkphnsjj0ae.apps.googleusercontent.com',
@@ -109,13 +112,31 @@ export default class Register extends Component {
                 alert('hepsini doldur')
             }
             else {
-                this.setState({ nextPage: true })
+                //this.setState({ nextPage: true })
+                this.registerUser(values)
             }
         }
 
         else {
             alert('false')
         }
+    }
+
+    registerUser = (values) => {
+        console.log(values.fullName)
+        const url = `http://wordlib-env.eba-qaxzbsq8.us-east-1.elasticbeanstalk.com/register`
+        axios({
+            method:'post',
+            url:url,
+            data:{
+                'username':values.fullName,
+                'email': values.email,
+                'password' : values.password,
+                'password2' : values.password2
+            }
+        })
+        .then((res)=>console.log(res))
+        .catch((error)=>console.log(error.response.data.message))
     }
 
     render() {
@@ -267,7 +288,7 @@ export default class Register extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: '#00cccc'
+        backgroundColor: '#283d6c'
     },
     signUp: {
         flexDirection: 'row',
@@ -277,7 +298,8 @@ const style = StyleSheet.create({
     },
     signUpText: {
         fontSize: hp('3%'),
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color:'white'
     },
     logInButton: {
         fontWeight: '700',
