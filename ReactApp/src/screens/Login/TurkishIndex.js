@@ -27,9 +27,11 @@ import {
 
 import auth from '@react-native-firebase/auth';
 
+import UrlIndex from '../../methods/url'
+
 import { LoginManager, AccessToken } from 'react-native-fbsdk'
 
-import LoginUser from '../../methods/Login/loginUser'
+import axios from 'axios'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -102,7 +104,6 @@ export default class Login extends Component {
     }
 
     _renkDegisim = (values) => {
-        console.log(values.email)
         if (values.email == '') {
             this.setState({ borderColorEmail: this.state.borderColorRed })
         }
@@ -118,8 +119,33 @@ export default class Login extends Component {
 
     }
 
+    isEquels = (values) => {
+        if (values.email == '' || values.password == '') {
+            alert('Hepsini doldur')
+        }
+        else {
+            this.fetchUser(values)
+        }
+    }
+
     fetchUser = (values) => {
-        LoginUser(values.email, values.password)
+        const url = UrlIndex + 'login'
+        axios({
+            method:'post',
+            url:url,
+            data:{
+                'email': values.email,
+                'password' : values.password
+            }
+        })
+        .then((res)=>{
+            console.log(res.data['Token']),
+            alert('Giriş Başarılı'),
+            setTimeout(() => {
+                this.props.navigation.navigate('Home')
+            },2000) 
+            })
+        .catch((error)=>alert(error.response.data['Error Message']))
     }
 
     render() {
@@ -158,7 +184,10 @@ export default class Login extends Component {
                                     email: '',
                                     password: ''
                                 }}
-                                onSubmit={(values) => {this._renkDegisim(values), this.fetchUser(values)}}
+                                onSubmit={(values) => {
+                                    this._renkDegisim(values), 
+                                    this.isEquels(values)
+                                }}
                                 validationSchema={Yup.object().shape({
                                     // email: Yup.string().email().required('Email is required'),
                                     // password: Yup.string().required('Password is required')
@@ -173,17 +202,19 @@ export default class Login extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>E-posta</Text>
                                                 <TextInput
                                                     value={values.email}
+                                                    placeholder={'E-posta'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('email')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Şifre</Text>
                                                 <TextInput
                                                     value={values.password}
+                                                    placeholder={'Şifre'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
                                                     secureTextEntry={this.state.hidePassword}
@@ -262,7 +293,7 @@ export default class Login extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#eb4a42'
+        backgroundColor:'#00B7EB'
         //#00B7EB
     },
     signUp: {
@@ -302,7 +333,7 @@ const style = StyleSheet.create({
     Icon: {
         position: 'absolute',
         right: '5%',
-        top: '52%'
+        top: '45%'
     },
     checkBox: {
         borderWidth: 1,

@@ -23,7 +23,10 @@ import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
 
+import UrlIndex from '../../methods/url'
+
 import auth from '@react-native-firebase/auth';
+import axios from 'axios'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -100,21 +103,42 @@ export default class Register extends Component {
         }
 
     }
+
     isEquels = (values) => {
         if (values.password == values.password2) {
-            console.log(values.password, ' ', values.password2)
-
-            if (values.fullName == '' && values.email == '' && values.password == '' && values.password2 == '') {
-                alert('hepsini doldur')
+            if (values.fullName == '' || values.email == '' || values.password == '' || values.password2 == '') {
+                alert('Hepsini doldur')
             }
             else {
-                this.setState({ nextPage: true })
+                this.registerUser(values)
             }
         }
 
         else {
-            alert('false')
+            alert('Şifreler aynı değil')
         }
+    }
+
+    registerUser = (values) => {
+        const url = UrlIndex + 'register'
+        axios({
+            method: 'post',
+            url: url,
+            data: {
+                'username': values.fullName,
+                'email': values.email,
+                'password': values.password,
+                'password2': values.password2
+            }
+        })
+            .then((res) => {
+                console.log(res), 
+                alert('Lütfen e-postanıza gelen mesajı onaylayınız.')
+                setTimeout(() => {
+                    this.props.navigation.navigate('TrLogin')
+                },2000)
+            })
+            .catch((error) => alert('Hata ' + error.response.data.message))
     }
 
     render() {
@@ -125,7 +149,7 @@ export default class Register extends Component {
                         <View style={style.header}>
                             <View style={style.logo_area}>
                                 <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
-                                <EyeAnimation/>
+                                <EyeAnimation />
                             </View>
                             <View style={style.signUp}>
                                 <Text style={style.signUpText}>Kayıt Ol</Text>
@@ -141,8 +165,8 @@ export default class Register extends Component {
                                 }}
                                 onSubmit={(values) => {
                                     this._renkDegisim(values), this.isEquels(values),
-                                    (this.state.nextPage) ?
-                                        this.props.navigation.navigate('Home') : null
+                                        (this.state.nextPage) ?
+                                            this.props.navigation.navigate('Home') : null
                                 }}
                                 validationSchema={Yup.object().shape({
                                     //fullName: Yup.string().required('Name is required'),
@@ -159,25 +183,28 @@ export default class Register extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Kullanıcı Adı<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.fullName}
+                                                    placeholder={'Kullanıcı Adı'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('fullName')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorName }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>E-posta<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.email}
+                                                    placeholder={'E-posta'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('email')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Şifre<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.password}
+                                                    placeholder={'Şifre'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
                                                     secureTextEntry={this.state.hidePassword}
@@ -190,9 +217,10 @@ export default class Register extends Component {
                                                 </TouchableOpacity>
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Tekrar Şifre<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.password2}
+                                                    placeholder={'Tekrar Şifre'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password2')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword2 }]}
                                                     secureTextEntry={this.state.hidePassword2}
@@ -262,7 +290,7 @@ export default class Register extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: '#00cccc'
+        backgroundColor: '#00B7EB'
     },
     signUp: {
         flexDirection: 'row',
@@ -295,7 +323,7 @@ const style = StyleSheet.create({
     Icon: {
         position: 'absolute',
         right: '5%',
-        top: '52%'
+        top: '45%'
     },
     signUpBotton: {
         borderWidth: 1,

@@ -25,8 +25,10 @@ import {
 
 import auth from '@react-native-firebase/auth';
 import EyeAnimation from '../../components/animationComponents/eyeAnimation';
+import UrlIndex from '../../methods/url'
 
 import axios from 'axios'
+import { _allowStateReadsStart } from 'mobx';
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -106,25 +108,20 @@ export default class Register extends Component {
 
     isEquels = (values) => {
         if (values.password == values.password2) {
-            console.log(values.password, ' ', values.password2)
-
-            if (values.fullName == '' && values.email == '' && values.password == '' && values.password2 == '') {
+            if (values.fullName == '' || values.email == '' || values.password == '' || values.password2 == '') {
                 alert('hepsini doldur')
             }
             else {
-                //this.setState({ nextPage: true })
                 this.registerUser(values)
             }
         }
-
         else {
             alert('false')
         }
     }
 
     registerUser = (values) => {
-        console.log(values.fullName)
-        const url = `http://wordlib-env.eba-qaxzbsq8.us-east-1.elasticbeanstalk.com/register`
+        const url = UrlIndex + 'register'
         axios({
             method:'post',
             url:url,
@@ -135,8 +132,14 @@ export default class Register extends Component {
                 'password2' : values.password2
             }
         })
-        .then((res)=>console.log(res))
-        .catch((error)=>console.log(error.response.data.message))
+        .then((res)=>{
+            console.log(res), 
+            alert('Please confirm the mail to your email address.')
+            setTimeout(() => {
+                this.props.navigation.navigate('EnLogin')
+            },2000)
+        })
+        .catch((error)=>alert('Hata ' + error.response.data.message))
     }
 
     render() {
@@ -183,31 +186,32 @@ export default class Register extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Username<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.fullName}
+                                                    placeholder={'Username'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('fullName')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorName }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Email<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.email}
+                                                    placeholder={'Email'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('email')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Password<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.password}
+                                                    placeholder={'Password'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
                                                     secureTextEntry={this.state.hidePassword}
                                                 />
-
-
                                                 <TouchableOpacity
                                                     style={style.Icon}
                                                     onPress={() => this.setState({ hidePassword: !this.state.hidePassword })}
@@ -216,9 +220,10 @@ export default class Register extends Component {
                                                 </TouchableOpacity>
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Confirm Password<Text style={{ color: '#FF7A59', fontSize: hp('2%') }}> *</Text></Text>
                                                 <TextInput
                                                     value={values.password2}
+                                                    placeholder={'Confirm Password'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password2')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword2 }]}
                                                     secureTextEntry={this.state.hidePassword2}
@@ -288,7 +293,7 @@ export default class Register extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor: '#283d6c'
+        backgroundColor: '#00B7EB'
     },
     signUp: {
         flexDirection: 'row',
@@ -299,7 +304,7 @@ const style = StyleSheet.create({
     signUpText: {
         fontSize: hp('3%'),
         fontWeight: 'bold',
-        color:'white'
+        color:'black'
     },
     logInButton: {
         fontWeight: '700',
@@ -322,7 +327,7 @@ const style = StyleSheet.create({
     Icon: {
         position: 'absolute',
         right: '5%',
-        top: '52%'
+        top: '45%'
     },
     signUpBotton: {
         borderWidth: 1,
@@ -330,7 +335,7 @@ const style = StyleSheet.create({
         borderColor: '#424242',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#2196F3',
+        backgroundColor: '#65b5fc',
         padding: hp('2.2%')
     },
     flag: {

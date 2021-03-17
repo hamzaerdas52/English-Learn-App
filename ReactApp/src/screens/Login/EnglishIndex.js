@@ -20,19 +20,19 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
-import EyeAnimation from '../../components/animationComponents/eyeAnimation';
-
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
-
 import auth from '@react-native-firebase/auth';
+import { LoginManager, AccessToken } from 'react-native-fbsdk'
 
-import { LoginManager, AccessToken } from 'react-native-fbsdk' 
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
+import UrlIndex from '../../methods/url'
+import LoginUser from '../../methods/loginUser'
 
-import LoginUser from '../../methods/Login/loginUser'
+import Token from '../../methods/token'
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -55,13 +55,15 @@ export default class Login extends Component {
             borderColorBlack: 'black',
             turkce: false,
             loaded: false,
-            isTurkish : false
+            isTurkish: false
         }
-        this.eyeAnimation= new Animated.Value(0)
+        this.eyeAnimation = new Animated.Value(0)
     }
 
     componentDidMount() {
         //this.playAnimation()
+        //AsyncStorage.setItem('Hamza','Erdas')
+        AsyncStorage.getItem('Hamza').then((res) => console.log(res))
     }
 
     // playAnimation = () => {
@@ -93,25 +95,25 @@ export default class Login extends Component {
     onFacebookButtonPress = async () => {
         //Attempt login with permissions
         const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-      
+
         if (result.isCancelled) {
-          throw 'User cancelled the login process';
+            throw 'User cancelled the login process';
         }
-      
+
         //Once signed in, get the users AccesToken
         const data = await AccessToken.getCurrentAccessToken();
-      
+
         if (!data) {
-          throw 'Something went wrong obtaining access token';
+            throw 'Something went wrong obtaining access token';
         }
-      
+
         //Create a Firebase credential with the AccessToken
         const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-      
+
         //Sign-in the user with the credential
         await auth().signInWithCredential(facebookCredential);
         console.log('Facebook ile girildi')
-      }
+    }
 
     _handleSubmit = (values) => {
         console.log(values.fullName)
@@ -135,19 +137,36 @@ export default class Login extends Component {
 
     }
 
+    isEquels = (values) => {
+        if (values.email == '' || values.password == '') {
+            alert('Fill all')
+        }
+        else {
+            this.fetchUser(values)
+        }
+    }
+
     fetchUser = (values) => {
-        //LoginUser(values.email, values.password)
-        const url = `http://wordlib-env.eba-qaxzbsq8.us-east-1.elasticbeanstalk.com/login`
+        //LoginUser( values.email, values.password)
+
+        const url = UrlIndex + 'login'
         axios({
-            method:'post',
-            url:url,
-            data:{
+            method: 'post',
+            url: url,
+            data: {
                 'email': values.email,
-                'password' : values.password
+                'password': values.password
             }
         })
-        .then((res)=>{console.log(res.data['Token']), this.props.navigation.navigate('Home')})
-        .catch((error)=>alert(error.response.data['Error Message']))
+            .then((res) => {
+                //console.log(res.data['Token']),
+                Token(res.data['Token'])
+                alert('Login Successful'),
+                setTimeout(() => {
+                    this.props.navigation.navigate('Home')
+                }, 2000)
+            })
+            .catch((error) => alert(error.response.data['Error Message']))
     }
 
     render() {
@@ -171,10 +190,10 @@ export default class Login extends Component {
                                 </TouchableOpacity>
                             </View>
                             <View style={style.logo_area}>
-                                
-                                <Image style={{width:wp('40%'),height:hp('30%'),resizeMode:'contain'}} source={require('../../image/LOGO.png')} />
-                                
-                                <EyeAnimation/>
+
+                                <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
+
+                                <EyeAnimation />
                                 {/* <Animated.View
                                     style={{
                                         width:wp('4%'),
@@ -187,7 +206,7 @@ export default class Login extends Component {
                                         }}
                                 /> */}
                             </View>
-                            
+
                             <View style={style.signUp}>
                                 <Text style={style.signUpText}>Login</Text>
                             </View>
@@ -198,7 +217,10 @@ export default class Login extends Component {
                                     email: '',
                                     password: ''
                                 }}
-                                onSubmit={(values) => {this._renkDegisim(values), this.fetchUser(values)}}
+                                onSubmit={(values) => {
+                                    this._renkDegisim(values),
+                                        this.isEquels(values)
+                                }}
                                 validationSchema={Yup.object().shape({
                                     // email: Yup.string().email().required('Email is required'),
                                     // password: Yup.string().required('Password is required')
@@ -213,17 +235,19 @@ export default class Login extends Component {
                                     <View>
                                         <View style={[style.form]}>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Email</Text>
                                                 <TextInput
                                                     value={values.email}
+                                                    placeholder={'Email'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('email')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
                                                 />
                                             </View>
                                             <View style={style.insideForm}>
-                                                <Text style={{ fontSize: hp('2%') }}>Password</Text>
                                                 <TextInput
                                                     value={values.password}
+                                                    placeholder={'Password'}
+                                                    placeholderTextColor={'#07174a'}
                                                     onChangeText={handleChange('password')}
                                                     style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
                                                     secureTextEntry={this.state.hidePassword}
@@ -237,7 +261,7 @@ export default class Login extends Component {
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                                                 <TouchableOpacity>
-                                                    <Text style={{fontSize:hp('2%'),fontWeight:'700',color:'#263238'}}>Forget Password?</Text>
+                                                    <Text style={{ fontSize: hp('2%'), fontWeight: '700', color: '#263238' }}>Forget Password?</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
@@ -266,8 +290,8 @@ export default class Login extends Component {
                                                 </View>
                                                 <View>
                                                     <TouchableOpacity
-                                                        onPress={()=>this.onFacebookButtonPress()}
-                                                    
+                                                        onPress={() => this.onFacebookButtonPress()}
+
                                                     >
                                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                             <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
@@ -281,7 +305,7 @@ export default class Login extends Component {
                                 )
                                 }
                             </Formik>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding:25 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding: 25 }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <Text style={{ fontSize: hp('2.4%') }}>Don't have an account? </Text>
                                     <TouchableOpacity
@@ -302,8 +326,7 @@ export default class Login extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#00B7EB'
-        //#00B7EB
+        backgroundColor: '#00B7EB'
     },
     signUp: {
         flexDirection: 'row',
@@ -312,10 +335,10 @@ const style = StyleSheet.create({
         alignItems: 'center',
 
     },
-    logo_area:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
+    logo_area: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     signUpText: {
         fontSize: hp('3%'),
@@ -342,7 +365,7 @@ const style = StyleSheet.create({
     Icon: {
         position: 'absolute',
         right: '5%',
-        top: '52%'
+        top: '45%'
     },
     checkBox: {
         borderWidth: 1,
@@ -368,23 +391,23 @@ const style = StyleSheet.create({
         backgroundColor: '#2196F3',
         padding: hp('2.2%')
     },
-    footer:{
-        marginTop:hp('4%'),
-        paddingHorizontal:wp('10%'),
-        borderTopLeftRadius:40,
-        borderTopRightRadius:40,
-        backgroundColor:'white'
+    footer: {
+        marginTop: hp('4%'),
+        paddingHorizontal: wp('10%'),
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        backgroundColor: 'white'
     },
-    header:{
+    header: {
     },
-    flag:{
-        resizeMode:'contain',
-        width:wp('7%'),
-        height:hp('7%')
+    flag: {
+        resizeMode: 'contain',
+        width: wp('7%'),
+        height: hp('7%')
     },
-    flag_view:{
-        position:'absolute',
-        flexDirection:'row',
-        right:wp('3%')
+    flag_view: {
+        position: 'absolute',
+        flexDirection: 'row',
+        right: wp('3%')
     }
 })
