@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createDrawerNavigator } from 'react-navigation-drawer'
 
@@ -10,6 +10,7 @@ import EnLogin from './screens/Login/EnglishIndex'
 import TrLogin from './screens/Login/TurkishIndex'
 import Home from './screens/Home/index'
 import Drawer from './screens/Drawer/index'
+import Auth from './screens/Auth/index'
 
 import Index from './screens/Login/index'
 
@@ -44,7 +45,13 @@ const AuthStack = createStackNavigator({
         navigationOptions:{
             headerShown:false
         }
-    },
+    }
+},{
+    initialRouteName:'EnLogin'
+}
+)
+
+const AppStack = createStackNavigator({
     Home:{
         screen:Home,
         navigationOptions:{
@@ -54,15 +61,20 @@ const AuthStack = createStackNavigator({
     Drawer : {
         screen : Drawer
     }
-},{
-    initialRouteName:'EnLogin'
-}
-)
+})
 
 const DrawerStack = createDrawerNavigator({
-    Home : AuthStack
+    Home : AppStack
 },{
     contentComponent:Drawer
 })
 
-export default createAppContainer(DrawerStack)
+const SwitchNavigator = createSwitchNavigator({
+    App:DrawerStack,
+    Auth,
+    Authenticate:AuthStack
+},{
+    initialRouteName:'Auth'
+})
+
+export default createAppContainer(SwitchNavigator)

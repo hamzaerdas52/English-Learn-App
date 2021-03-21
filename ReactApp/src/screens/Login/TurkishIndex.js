@@ -241,7 +241,7 @@ export default class Login extends Component {
                                                     <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Giriş Yap</Text>
                                                 </TouchableOpacity>
                                             </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('1%') }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('3%') }}>
                                                 <Text style={{ fontSize: hp('2.4%') }}>ya da</Text>
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>

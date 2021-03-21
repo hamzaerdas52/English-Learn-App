@@ -63,7 +63,7 @@ export default class Login extends Component {
     componentDidMount() {
         //this.playAnimation()
         //AsyncStorage.setItem('Hamza','Erdas')
-        AsyncStorage.getItem('Hamza').then((res) => console.log(res))
+        //AsyncStorage.getItem('Hamza').then((res) => console.log(res))
     }
 
     // playAnimation = () => {
@@ -180,7 +180,6 @@ export default class Login extends Component {
         return (
             <SafeAreaView style={style.body}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <View>
                         <View style={style.header}>
                             <View style={style.flag_view}>
                                 <TouchableOpacity
@@ -274,7 +273,7 @@ export default class Login extends Component {
                                                     <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Login</Text>
                                                 </TouchableOpacity>
                                             </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('1%') }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('2.5%') }}>
                                                 <Text style={{ fontSize: hp('2.4%') }}>or</Text>
                                             </View>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -316,7 +315,6 @@ export default class Login extends Component {
                                 </View>
                             </View>
                         </View>
-                    </View>
                 </ScrollView>
             </SafeAreaView>
         )
@@ -396,9 +394,11 @@ const style = StyleSheet.create({
         paddingHorizontal: wp('10%'),
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        flex:2
     },
     header: {
+        flex:1
     },
     flag: {
         resizeMode: 'contain',
