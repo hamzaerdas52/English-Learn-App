@@ -18,15 +18,15 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
-
-import UrlIndex from '../../methods/url'
-
+import { Root, Popup } from 'popup-ui'
 import auth from '@react-native-firebase/auth';
 import axios from 'axios'
+
+import UrlIndex from '../../methods/url'
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -53,6 +53,22 @@ export default class Register extends Component {
             borderColorPassword2: '',
             nextPage: false
         }
+    }
+
+    popUp = (type, title, text) => {
+        Popup.show({
+            type: type,
+            title: title,
+            button: true,
+            textBody: text,
+            buttonText: "Close",
+            autoClose: false,
+            timing: 2000,
+            callback: () => {
+                Popup.hide(),
+                    (type == "Success") ? this.props.navigation.navigate('TrLogin') : null
+            }
+        })
     }
 
     onGoogleButtonPress = async () => {
@@ -107,7 +123,7 @@ export default class Register extends Component {
     isEquels = (values) => {
         if (values.password == values.password2) {
             if (values.fullName == '' || values.email == '' || values.password == '' || values.password2 == '') {
-                alert('Hepsini doldur')
+                this.popUp("Warning", "Uyarı", "Lütfen Hepsini Doldurun")
             }
             else {
                 this.registerUser(values)
@@ -115,7 +131,7 @@ export default class Register extends Component {
         }
 
         else {
-            alert('Şifreler aynı değil')
+            this.popUp("Danger", "Uyarı", "Şifreler Aynı Değil")
         }
     }
 
@@ -132,157 +148,156 @@ export default class Register extends Component {
             }
         })
             .then((res) => {
-                console.log(res), 
-                alert('Lütfen e-postanıza gelen mesajı onaylayınız.')
-                setTimeout(() => {
-                    this.props.navigation.navigate('TrLogin')
-                },2000)
+                console.log(res)
+                this.popUp("Success", "Başarılı", "Lütfen e-postanıza gelen mesajı onaylayınız.")
             })
             .catch((error) => alert('Hata ' + error.response.data.message))
     }
 
     render() {
         return (
-            <SafeAreaView style={[style.body, {}]}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View>
-                        <View style={style.header}>
-                            <View style={style.logo_area}>
-                                <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
-                                <EyeAnimation />
+            <Root>
+                <SafeAreaView style={[style.body, {}]}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <View>
+                            <View style={style.header}>
+                                <View style={style.logo_area}>
+                                    <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
+                                    <EyeAnimation />
+                                </View>
+                                <View style={style.signUp}>
+                                    <Text style={style.signUpText}>Kayıt Ol</Text>
+                                </View>
                             </View>
-                            <View style={style.signUp}>
-                                <Text style={style.signUpText}>Kayıt Ol</Text>
-                            </View>
-                        </View>
-                        <View style={style.footer}>
-                            <Formik
-                                initialValues={{
-                                    fullName: '',
-                                    email: '',
-                                    password: '',
-                                    password2: ''
-                                }}
-                                onSubmit={(values) => {
-                                    this._renkDegisim(values), this.isEquels(values),
-                                        (this.state.nextPage) ?
-                                            this.props.navigation.navigate('Home') : null
-                                }}
-                                validationSchema={Yup.object().shape({
-                                    //fullName: Yup.string().required('Name is required'),
-                                    // email: Yup.string().email().required('Email is required'),
-                                    // password: Yup.string().required('Password is required')
-                                })}
-                            >
-                                {({
-                                    values,
-                                    handleSubmit,
-                                    handleChange,
-                                    errors
-                                }) => (
-                                    <View>
-                                        <View style={[style.form]}>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.fullName}
-                                                    placeholder={'Kullanıcı Adı'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('fullName')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorName }]}
-                                                />
+                            <View style={style.footer}>
+                                <Formik
+                                    initialValues={{
+                                        fullName: '',
+                                        email: '',
+                                        password: '',
+                                        password2: ''
+                                    }}
+                                    onSubmit={(values) => {
+                                        this._renkDegisim(values), this.isEquels(values),
+                                            (this.state.nextPage) ?
+                                                this.props.navigation.navigate('Home') : null
+                                    }}
+                                    validationSchema={Yup.object().shape({
+                                        //fullName: Yup.string().required('Name is required'),
+                                        // email: Yup.string().email().required('Email is required'),
+                                        // password: Yup.string().required('Password is required')
+                                    })}
+                                >
+                                    {({
+                                        values,
+                                        handleSubmit,
+                                        handleChange,
+                                        errors
+                                    }) => (
+                                        <View>
+                                            <View style={[style.form]}>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.fullName}
+                                                        placeholder={'Kullanıcı Adı'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('fullName')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorName }]}
+                                                    />
+                                                </View>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.email}
+                                                        placeholder={'E-posta'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('email')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
+                                                    />
+                                                </View>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.password}
+                                                        placeholder={'Şifre'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('password')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
+                                                        secureTextEntry={this.state.hidePassword}
+                                                    />
+                                                    <TouchableOpacity
+                                                        style={style.Icon}
+                                                        onPress={() => this.setState({ hidePassword: !this.state.hidePassword })}
+                                                    >
+                                                        <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.password2}
+                                                        placeholder={'Tekrar Şifre'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('password2')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorPassword2 }]}
+                                                        secureTextEntry={this.state.hidePassword2}
+                                                    />
+                                                    <TouchableOpacity
+                                                        style={style.Icon}
+                                                        onPress={() => this.setState({ hidePassword2: !this.state.hidePassword2 })}
+                                                    >
+                                                        <Icon name={(this.state.hidePassword2) ? 'eye-slash' : 'eye'} size={20} />
+                                                    </TouchableOpacity>
+                                                </View>
                                             </View>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.email}
-                                                    placeholder={'E-posta'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('email')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
-                                                />
-                                            </View>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.password}
-                                                    placeholder={'Şifre'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('password')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
-                                                    secureTextEntry={this.state.hidePassword}
-                                                />
-                                                <TouchableOpacity
-                                                    style={style.Icon}
-                                                    onPress={() => this.setState({ hidePassword: !this.state.hidePassword })}
-                                                >
-                                                    <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.password2}
-                                                    placeholder={'Tekrar Şifre'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('password2')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorPassword2 }]}
-                                                    secureTextEntry={this.state.hidePassword2}
-                                                />
-                                                <TouchableOpacity
-                                                    style={style.Icon}
-                                                    onPress={() => this.setState({ hidePassword2: !this.state.hidePassword2 })}
-                                                >
-                                                    <Icon name={(this.state.hidePassword2) ? 'eye-slash' : 'eye'} size={20} />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
 
-                                        <View style={{ marginTop: hp('2.6%') }}>
-                                            <View>
-                                                <TouchableOpacity
-                                                    style={style.signUpBotton}
-                                                    onPress={handleSubmit}
-                                                >
-                                                    <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Kayıt Ol</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('1%') }}>
-                                                <Text style={{ fontSize: hp('2.4%') }}>ya da</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                            <View style={{ marginTop: hp('2.6%') }}>
                                                 <View>
-                                                    <TouchableOpacity onPress={() => this.onGoogleButtonPress().then(() => alert('Google ile giriş yapıldı'))}>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Image style={{ width: wp('7%'), height: hp('4%') }} source={require('../../icons/icons8-google-240.png')} />
-                                                            <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Google </Text>
-                                                        </View>
+                                                    <TouchableOpacity
+                                                        style={style.signUpBotton}
+                                                        onPress={handleSubmit}
+                                                    >
+                                                        <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Kayıt Ol</Text>
                                                     </TouchableOpacity>
                                                 </View>
-                                                <View>
-                                                    <TouchableOpacity>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
-                                                            <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Facebook </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('1%') }}>
+                                                    <Text style={{ fontSize: hp('2.4%') }}>ya da</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                                    <View>
+                                                        <TouchableOpacity onPress={() => this.onGoogleButtonPress().then(() => alert('Google ile giriş yapıldı'))}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <Image style={{ width: wp('7%'), height: hp('4%') }} source={require('../../icons/icons8-google-240.png')} />
+                                                                <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Google </Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    <View>
+                                                        <TouchableOpacity>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
+                                                                <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Facebook </Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    </View>
                                                 </View>
                                             </View>
                                         </View>
+                                    )
+                                    }
+                                </Formik>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding: 25 }}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ fontSize: hp('2.4%') }}>Hesabın var mı? </Text>
+                                        <TouchableOpacity
+                                            onPress={() => this.props.navigation.navigate('TrLogin')}
+                                        >
+                                            <Text style={style.logInButton}>Giriş Yap</Text>
+                                        </TouchableOpacity>
                                     </View>
-                                )
-                                }
-                            </Formik>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding: 25 }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Text style={{ fontSize: hp('2.4%') }}>Hesabın var mı? </Text>
-                                    <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('TrLogin')}
-                                    >
-                                        <Text style={style.logInButton}>Giriş Yap</Text>
-                                    </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+                    </ScrollView>
+                </SafeAreaView>
+            </Root>
         )
     }
 }

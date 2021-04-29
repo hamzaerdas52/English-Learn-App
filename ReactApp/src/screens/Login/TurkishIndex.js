@@ -18,20 +18,19 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-
-import EyeAnimation from '../../components/animationComponents/eyeAnimation';
-
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
-
 import auth from '@react-native-firebase/auth';
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LoginManager, AccessToken } from 'react-native-fbsdk'
+import { Root, Popup } from 'popup-ui'
 
 import UrlIndex from '../../methods/url'
-
-import { LoginManager, AccessToken } from 'react-native-fbsdk'
-
-import axios from 'axios'
+import EyeAnimation from '../../components/animationComponents/eyeAnimation';
+import Token from '../../methods/token';
+import SetLanguage from '../../methods/setLanguage';
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -54,9 +53,25 @@ export default class Login extends Component {
             borderColorBlack: 'black',
             turkce: false,
             loaded: false,
-            isTurkish : false,
-            isClose : true
+            isTurkish: false,
+            isClose: true
         }
+    }
+
+    popUp = (type, title, text) => {
+        Popup.show({
+            type: type,
+            title: title,
+            button: true,
+            textBody: text,
+            buttonText: "Close",
+            autoClose: false,
+            timing: 2000,
+            callback: () => Popup.hide()
+        })
+    }
+
+    componentDidMount() {
     }
 
     onGoogleButtonPress = async () => {
@@ -77,25 +92,25 @@ export default class Login extends Component {
     onFacebookButtonPress = async () => {
         //Attempt login with permissions
         const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-      
+
         if (result.isCancelled) {
-          throw 'User cancelled the login process';
+            throw 'User cancelled the login process';
         }
-      
+
         //Once signed in, get the users AccesToken
         const data = await AccessToken.getCurrentAccessToken();
-      
+
         if (!data) {
-          throw 'Something went wrong obtaining access token';
+            throw 'Something went wrong obtaining access token';
         }
-      
+
         //Create a Firebase credential with the AccessToken
         const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-      
+
         //Sign-in the user with the credential
         await auth().signInWithCredential(facebookCredential);
         console.log('Facebook ile girildi')
-      }
+    }
 
     _handleSubmit = (values) => {
         console.log(values.fullName)
@@ -121,7 +136,7 @@ export default class Login extends Component {
 
     isEquels = (values) => {
         if (values.email == '' || values.password == '') {
-            alert('Hepsini doldur')
+            this.popUp("Warning", "Uyarı", "Lüften Hepsini Doldurun")
         }
         else {
             this.fetchUser(values)
@@ -131,161 +146,166 @@ export default class Login extends Component {
     fetchUser = (values) => {
         const url = UrlIndex + 'login'
         axios({
-            method:'post',
-            url:url,
-            data:{
+            method: 'post',
+            url: url,
+            data: {
                 'email': values.email,
-                'password' : values.password
+                'password': values.password
             }
         })
-        .then((res)=>{
-            console.log(res.data['Token']),
-            alert('Giriş Başarılı'),
-            setTimeout(() => {
-                this.props.navigation.navigate('Home')
-            },2000) 
+            .then((res) => {
+                Token(res.data['Token'])
+                this.popUp("Success", "Başarılı", "Giriş Başarılı :)"),
+                    setTimeout(() => {
+                        this.props.navigation.navigate('Home')
+                    }, 2000)
             })
-        .catch((error)=>alert(error.response.data['Error Message']))
+            .catch((error) => alert(error.response.data['Error Message']))
     }
 
     render() {
         const { turkce } = this.state
         return (
-            <SafeAreaView style={style.body}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View>
-                        <View style={style.header}>
-                            <View style={style.flag_view}>
-                                <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('EnLogin')}
-                                >
-                                    <Image style={style.flag} source={require('../../image/united-kingdom.png')} />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={style.logo_area}>
-                                <Image style={{width:wp('40%'),height:hp('30%'),resizeMode:'contain'}} source={require('../../image/LOGO.png')} />
-                                <EyeAnimation/>
-                            </View>
-                            {this.state.isClose ? 
-                            <View
-                                style={{position:'absolute', width:wp('3.5%'), height:hp('1%'),backgroundColor:'rgba(255,255,255,0)', top:70, left:177, borderRadius:20}}
-                            /> :
-                            <View
-                                style={{position:'absolute', width:wp('3.5%'), height:hp('1%'),backgroundColor:'rgba(255,255,255,1)', top:70, left:177, borderRadius:20}}
-                            />
-                            }
-                            <View style={style.signUp}>
-                                <Text style={style.signUpText}>Giriş Yap</Text>
-                            </View>
-                        </View>
-                        <View style={style.footer}>
-                            <Formik
-                                initialValues={{
-                                    email: '',
-                                    password: ''
-                                }}
-                                onSubmit={(values) => {
-                                    this._renkDegisim(values), 
-                                    this.isEquels(values)
-                                }}
-                                validationSchema={Yup.object().shape({
-                                    // email: Yup.string().email().required('Email is required'),
-                                    // password: Yup.string().required('Password is required')
-                                })}
-                            >
-                                {({
-                                    values,
-                                    handleSubmit,
-                                    handleChange,
-                                    errors
-                                }) => (
-                                    <View>
-                                        <View style={[style.form]}>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.email}
-                                                    placeholder={'E-posta'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('email')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
-                                                />
-                                            </View>
-                                            <View style={style.insideForm}>
-                                                <TextInput
-                                                    value={values.password}
-                                                    placeholder={'Şifre'}
-                                                    placeholderTextColor={'#07174a'}
-                                                    onChangeText={handleChange('password')}
-                                                    style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
-                                                    secureTextEntry={this.state.hidePassword}
-                                                />
-                                                <TouchableOpacity
-                                                    style={style.Icon}
-                                                    onPress={() => this.setState({ hidePassword: !this.state.hidePassword })}
-                                                >
-                                                    <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                                                <TouchableOpacity>
-                                                    <Text style={{fontSize:hp('2%'),fontWeight:'700',color:'#263238'}}>Şifremi Unuttum</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                        <View style={{ marginTop: hp('2.6%') }}>
-                                            <View>
-                                                <TouchableOpacity
-                                                    style={style.signUpBotton}
-                                                    onPress={ handleSubmit }
-                                                >
-                                                    <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Giriş Yap</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('3%') }}>
-                                                <Text style={{ fontSize: hp('2.4%') }}>ya da</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                                <View>
-                                                    <TouchableOpacity
-                                                        onPress={() => this.onGoogleButtonPress()}
-                                                    >
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Image style={{ width: wp('7%'), height: hp('4%') }} source={require('../../icons/icons8-google-240.png')} />
-                                                            <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Google </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-                                                <View>
-                                                    <TouchableOpacity
-                                                        onPress={()=>this.onFacebookButtonPress()}
-                                                    
-                                                    >
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                            <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
-                                                            <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Facebook </Text>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </View>
-                                )
-                                }
-                            </Formik>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding:25 }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Text style={{ fontSize: hp('2.4%') }}>Hesabınız yok mu? </Text>
+            <Root>
+                <SafeAreaView style={style.body}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <View>
+                            <View style={style.header}>
+                                <View style={style.flag_view}>
                                     <TouchableOpacity
-                                        onPress={() => this.props.navigation.navigate('TrRegister')}
+                                        onPress={() => {
+                                            this.props.navigation.navigate('EnLogin')
+                                            SetLanguage("En")
+                                        }}
                                     >
-                                        <Text style={style.logInButton}>Kayıt Ol</Text>
+                                        <Image style={style.flag} source={require('../../image/united-kingdom.png')} />
                                     </TouchableOpacity>
+                                </View>
+                                <View style={style.logo_area}>
+                                    <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
+                                    <EyeAnimation />
+                                </View>
+                                {this.state.isClose ?
+                                    <View
+                                        style={{ position: 'absolute', width: wp('3.5%'), height: hp('1%'), backgroundColor: 'rgba(255,255,255,0)', top: 70, left: 177, borderRadius: 20 }}
+                                    /> :
+                                    <View
+                                        style={{ position: 'absolute', width: wp('3.5%'), height: hp('1%'), backgroundColor: 'rgba(255,255,255,1)', top: 70, left: 177, borderRadius: 20 }}
+                                    />
+                                }
+                                <View style={style.signUp}>
+                                    <Text style={style.signUpText}>Giriş Yap</Text>
+                                </View>
+                            </View>
+                            <View style={style.footer}>
+                                <Formik
+                                    initialValues={{
+                                        email: '',
+                                        password: ''
+                                    }}
+                                    onSubmit={(values) => {
+                                        this._renkDegisim(values),
+                                            this.isEquels(values)
+                                    }}
+                                    validationSchema={Yup.object().shape({
+                                        // email: Yup.string().email().required('Email is required'),
+                                        // password: Yup.string().required('Password is required')
+                                    })}
+                                >
+                                    {({
+                                        values,
+                                        handleSubmit,
+                                        handleChange,
+                                        errors
+                                    }) => (
+                                        <View>
+                                            <View style={[style.form]}>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.email}
+                                                        placeholder={'E-posta'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('email')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorEmail }]}
+                                                    />
+                                                </View>
+                                                <View style={style.insideForm}>
+                                                    <TextInput
+                                                        value={values.password}
+                                                        placeholder={'Şifre'}
+                                                        placeholderTextColor={'#07174a'}
+                                                        onChangeText={handleChange('password')}
+                                                        style={[style.textInput, { borderColor: this.state.borderColorPassword }]}
+                                                        secureTextEntry={this.state.hidePassword}
+                                                    />
+                                                    <TouchableOpacity
+                                                        style={style.Icon}
+                                                        onPress={() => this.setState({ hidePassword: !this.state.hidePassword })}
+                                                    >
+                                                        <Icon name={(this.state.hidePassword) ? 'eye-slash' : 'eye'} size={20} />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                                                    <TouchableOpacity>
+                                                        <Text style={{ fontSize: hp('2%'), fontWeight: '700', color: '#263238' }}>Şifremi Unuttum</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                            <View style={{ marginTop: hp('2.6%') }}>
+                                                <View>
+                                                    <TouchableOpacity
+                                                        style={style.signUpBotton}
+                                                        onPress={handleSubmit}
+                                                    >
+                                                        <Text style={{ color: 'white', fontSize: hp('2.3%') }}>Giriş Yap</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center', padding: hp('3%') }}>
+                                                    <Text style={{ fontSize: hp('2.4%') }}>ya da</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                                    <View>
+                                                        <TouchableOpacity
+                                                            onPress={() => this.onGoogleButtonPress()}
+                                                        >
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <Image style={{ width: wp('7%'), height: hp('4%') }} source={require('../../icons/icons8-google-240.png')} />
+                                                                <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Google </Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                    <View>
+                                                        <TouchableOpacity
+                                                            onPress={() => this.onFacebookButtonPress()}
+
+                                                        >
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <Icon name={"facebook-f"} size={hp('3.5%')} color={"#3b5999"} />
+                                                                <Text style={{ fontSize: hp('2.5%'), marginLeft: hp('0.5%') }}> Facebook </Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )
+                                    }
+                                </Formik>
+                                <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%'), padding: 25 }}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ fontSize: hp('2.4%') }}>Hesabınız yok mu? </Text>
+                                        <TouchableOpacity
+                                            onPress={() => this.props.navigation.navigate('TrRegister')}
+                                        >
+                                            <Text style={style.logInButton}>Kayıt Ol</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                         </View>
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+                    </ScrollView>
+                </SafeAreaView>
+            </Root>
         )
     }
 }
@@ -293,7 +313,7 @@ export default class Login extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
-        backgroundColor:'#00B7EB'
+        backgroundColor: '#00B7EB'
         //#00B7EB
     },
     signUp: {
@@ -303,10 +323,10 @@ const style = StyleSheet.create({
         alignItems: 'center',
 
     },
-    logo_area:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
+    logo_area: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     signUpText: {
         fontSize: hp('3%'),
@@ -359,23 +379,23 @@ const style = StyleSheet.create({
         backgroundColor: '#2196F3',
         padding: hp('2.2%')
     },
-    footer:{
-        marginTop:hp('4%'),
-        paddingHorizontal:wp('10%'),
-        borderTopLeftRadius:40,
-        borderTopRightRadius:40,
-        backgroundColor:'white'
+    footer: {
+        marginTop: hp('4%'),
+        paddingHorizontal: wp('10%'),
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        backgroundColor: 'white'
     },
-    header:{
+    header: {
     },
-    flag:{
-        resizeMode:'contain',
-        width:wp('7%'),
-        height:hp('7%')
+    flag: {
+        resizeMode: 'contain',
+        width: wp('7%'),
+        height: hp('7%')
     },
-    flag_view:{
-        position:'absolute',
-        flexDirection:'row',
-        right:wp('3%')
+    flag_view: {
+        position: 'absolute',
+        flexDirection: 'row',
+        right: wp('3%')
     }
 })

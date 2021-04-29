@@ -16,6 +16,18 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
+import {
+    BallIndicator,
+    BarIndicator,
+    DotIndicator,
+    MaterialIndicator,
+    PacmanIndicator,
+    PulseIndicator,
+    SkypeIndicator,
+    UIActivityIndicator,
+    WaveIndicator
+} from "react-native-indicators"
+
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import UrlIndex from '../../methods/url';
@@ -26,27 +38,25 @@ export default class Home extends Component {
     constructor() {
         super()
         this.state = {
-            user_token: '',
-            category: []
+            category: [],
+            loading: false
         }
     }
 
     componentDidMount() {
         AsyncStorage.getItem('User_Token').then((res) => {
             const token = res
-            this.setState({ user_token: token })
-            this._getCategory()
+            this._getCategory(token)
         })
     }
 
-    _getCategory = () => {
-        const token = this.state.user_token
+    _getCategory = (token) => {
         const url = UrlIndex + 'category'
         axios({
             method: 'GET',
             url: url,
             // data : {
-            //     name : 'Arabalar'
+            //     name : 'Fiiller'
             // },
             headers: { token }
         })
@@ -58,7 +68,7 @@ export default class Home extends Component {
                         id: item.id
                     })
                 })
-                this.setState({ category: category })
+                this.setState({ category: category, loading:true })
             })
             .catch((error) => console.log(error.response.data))
     }
@@ -70,7 +80,7 @@ export default class Home extends Component {
     }
 
     render() {
-        const { category } = this.state
+        const { category, loading } = this.state
         return (
             <View style={style.body}>
                 <View style={style.header}>
@@ -82,25 +92,31 @@ export default class Home extends Component {
                         </TouchableOpacity>
                     </View>
                     <View>
-                        <Text style={{ fontSize: 25, fontWeight: '700' }} > WORDLİB </Text>
+                        <Text style={style.header_text}> WORDLİB </Text>
                     </View>
                     <View>
                     </View>
                 </View>
+                <View style={style.kategori_text_area}>
+                        <Text style={style.kategori_text}>Kategoriler</Text>
+                </View>
+                {(loading) ?
                 <View>
                     <View>
-                        <TouchableOpacity>
-                            <Text>Kategoriler</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View>
-                        <FlatList 
+                        <FlatList
                             style={style.category}
                             data={category}
                             renderItem={this._renderItem}
+                            numColumns={3}
                         />
                     </View>
                 </View>
+                :
+                <View style={style.loading_area}>
+                    <BallIndicator color={"#265fca"} size={60}/>
+                    <Text style={style.loading_text}>Yükleniyor</Text>
+                </View>
+                }
             </View>
         )
     }
@@ -109,21 +125,48 @@ export default class Home extends Component {
 const style = StyleSheet.create({
     body: {
         flex: 1,
+        backgroundColor: '#F7F9FC'
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '5%',
-        backgroundColor: '#a7c2d3'
+        height: '6%',
+        backgroundColor: '#498adc'
+
+    },
+    header_text: {
+        fontSize: 25,
+        fontWeight: '700',
+        marginRight: wp("5%")
     },
     menü_button_area: {
         left: wp('4%')
     },
     menü_button: {
     },
-    category:{
-        marginTop:'6%',
-        paddingHorizontal:'5%'
+    category: {
+        marginTop: '6%',
+        paddingHorizontal: '5%'
+    },
+    kategori_text_area: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '4%'
+    },
+    kategori_text: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    loading_area:{
+        justifyContent:"center",
+        alignItems:"center",
+        marginTop:hp("30%")
+    },
+    loading_text:{
+        marginTop:hp("7%"),
+        fontSize:20,
+        fontWeight:'700'
     }
 })

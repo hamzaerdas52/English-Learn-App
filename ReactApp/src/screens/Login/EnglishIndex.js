@@ -20,19 +20,21 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import {
     GoogleSignin
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk'
+import { Root, Popup } from 'popup-ui'
 
 import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 import UrlIndex from '../../methods/url'
 import LoginUser from '../../methods/loginUser'
 
 import Token from '../../methods/token'
+import SetLanguage from '../../methods/setLanguage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -55,27 +57,31 @@ export default class Login extends Component {
             borderColorBlack: 'black',
             turkce: false,
             loaded: false,
-            isTurkish: false
+            isTurkish: false,
+            languageEn: true
         }
         this.eyeAnimation = new Animated.Value(0)
     }
-
-    componentDidMount() {
-        //this.playAnimation()
-        //AsyncStorage.setItem('Hamza','Erdas')
-        //AsyncStorage.getItem('Hamza').then((res) => console.log(res))
+    
+    popUp = (type, title, text) => {
+        Popup.show({
+            type: type,
+            title: title,
+            button: true,
+            textBody: text,
+            buttonText: "Close",
+            autoClose: false,
+            timing: 2000,
+            callback: () => Popup.hide()
+        })
     }
 
-    // playAnimation = () => {
-    //     this.eyeAnimation.setValue(0)
-    //     Animated.timing(this.eyeAnimation, {
-    //         toValue:1,
-    //         duration: 200,
-    //         easing: Easing.linear,
-    //         useNativeDriver: false,
-    //         delay:1500
-    //     }).start(() => this.playAnimation())
-    // }
+    componentDidMount(){
+        AsyncStorage.getItem("Language").then((res) => {
+            if(res == "Tr") {this.setState({languageEn:false})}
+        })
+    }
+
 
     onGoogleButtonPress = async () => {
         // Get the users ID token
@@ -139,7 +145,7 @@ export default class Login extends Component {
 
     isEquels = (values) => {
         if (values.email == '' || values.password == '') {
-            alert('Fill all')
+            this.popUp("Warning", "Warning", "Please Fill All")
         }
         else {
             this.fetchUser(values)
@@ -147,8 +153,6 @@ export default class Login extends Component {
     }
 
     fetchUser = (values) => {
-        //LoginUser( values.email, values.password)
-
         const url = UrlIndex + 'login'
         axios({
             method: 'post',
@@ -159,31 +163,30 @@ export default class Login extends Component {
             }
         })
             .then((res) => {
-                //console.log(res.data['Token']),
+                console.log(res)
                 Token(res.data['Token'])
-                alert('Login Successful'),
-                setTimeout(() => {
-                    this.props.navigation.navigate('Home')
-                }, 2000)
+                this.popUp("Success", "Success", "Login Successful :)"),
+                    setTimeout(() => {
+                        this.props.navigation.navigate('Home')
+                    }, 2000)
             })
             .catch((error) => alert(error.response.data['Error Message']))
     }
 
     render() {
-        const { turkce } = this.state
-
-        // const opacity = this.eyeAnimation.interpolate({
-        //     inputRange:[0, 0.5, 1],
-        //     outputRange:[0, 1, 0]
-        // })
+        const { languageEn } = this.state
 
         return (
-            <SafeAreaView style={style.body}>
-                <ScrollView showsVerticalScrollIndicator={false}>
+            <Root>
+                <SafeAreaView style={style.body}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <View style={style.header}>
                             <View style={style.flag_view}>
                                 <TouchableOpacity
-                                    onPress={() => this.props.navigation.navigate('TrLogin')}
+                                    onPress={() => {
+                                        this.props.navigation.navigate('TrLogin')
+                                        SetLanguage("Tr")
+                                    }}
                                 >
                                     <Image style={style.flag} source={require('../../image/turkey.png')} />
                                 </TouchableOpacity>
@@ -193,17 +196,6 @@ export default class Login extends Component {
                                 <Image style={{ width: wp('40%'), height: hp('30%'), resizeMode: 'contain' }} source={require('../../image/LOGO.png')} />
 
                                 <EyeAnimation />
-                                {/* <Animated.View
-                                    style={{
-                                        width:wp('4%'),
-                                        height:hp('1.2%'),
-                                        backgroundColor:'white',
-                                        position:'absolute',
-                                        left: 161,
-                                        top: 47.5,
-                                        opacity
-                                        }}
-                                /> */}
                             </View>
 
                             <View style={style.signUp}>
@@ -315,8 +307,9 @@ export default class Login extends Component {
                                 </View>
                             </View>
                         </View>
-                </ScrollView>
-            </SafeAreaView>
+                    </ScrollView>
+                </SafeAreaView>
+            </Root>
         )
     }
 }
@@ -395,10 +388,10 @@ const style = StyleSheet.create({
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         backgroundColor: 'white',
-        flex:2
+        flex: 2
     },
     header: {
-        flex:1
+        flex: 1
     },
     flag: {
         resizeMode: 'contain',

@@ -13,8 +13,9 @@ import {
     listenOrientationChange as lor,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen';
-
 import Icon from 'react-native-vector-icons/FontAwesome5'
+
+import LogOutUser from "../../methods/logOutUser"
 
 export default class index extends Component {
     render() {
@@ -61,7 +62,12 @@ export default class index extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={style.button_area}>
-                        <TouchableOpacity style={style.button}>
+                        <TouchableOpacity 
+                            onPress={()=>{
+                                LogOutUser()
+                                this.props.navigation.navigate("EnLogin")
+                            }}
+                            style={style.button}>
                             <Text style={style.button_text}>Çıkış</Text>
                         </TouchableOpacity>
                     </View>
@@ -113,6 +119,7 @@ const style = StyleSheet.create({
     },
     button_text:{
         fontSize:17,
+        fontWeight:'700',
         color:'#0d257b'
     }
 })

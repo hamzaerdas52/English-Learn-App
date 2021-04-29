@@ -20,20 +20,24 @@ export default class App extends Component {
                 headers: { 'token' : user_token }
             })
             .then((res) => {
-                console.log(res.data['Result'])
                 if(res.data['Result'] == true){
                     this.props.navigation.navigate('App')
                 } 
                 else{
                     AsyncStorage.setItem('User_Token','')
-                    this.props.navigation.navigate('Authenticate')
-                }
-                    
+                    AsyncStorage.getItem("Language").then((res) => {
+                        console.log(res)
+                        (res == "En") ? this.props.navigation.navigate('EnLogin') : this.props.navigation.navigate('TrLogin')
+                    })                    
+                }                    
             })
             .catch((error) => {
+                console.log(error)
                 console.log(error.response.data)
                 AsyncStorage.setItem('User_Token','')
-                this.props.navigation.navigate('Authenticate')
+                AsyncStorage.getItem("Language").then((res) => {
+                    (res == "En") ? this.props.navigation.navigate('EnLogin') : this.props.navigation.navigate('TrLogin')
+                })
             })
 
         })

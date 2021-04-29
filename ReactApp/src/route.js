@@ -11,17 +11,10 @@ import TrLogin from './screens/Login/TurkishIndex'
 import Home from './screens/Home/index'
 import Drawer from './screens/Drawer/index'
 import Auth from './screens/Auth/index'
+import Difficulty from './screens/Difficulty/index'
+import Questions from './screens/Questions/index'
 
-import Index from './screens/Login/index'
-
-const AuthStack = createStackNavigator({
-    // Index:{
-    //     screen:Index,
-    //     navigationOptions:{
-    //         headerShown:false,
-    //     }
-    // },
-
+const AuthStack =  createStackNavigator({
     EnLogin:{
         screen:EnLogin,
         navigationOptions:{
@@ -46,8 +39,6 @@ const AuthStack = createStackNavigator({
             headerShown:false
         }
     }
-},{
-    initialRouteName:'EnLogin'
 }
 )
 
@@ -60,7 +51,21 @@ const AppStack = createStackNavigator({
     },
     Drawer : {
         screen : Drawer
+    },
+    Difficulty:{
+        screen: Difficulty,
+        navigationOptions:{
+            headerShown:false
+        }
+    },
+    Questions:{
+        screen: Questions,
+        navigationOptions:{
+            headerShown:false
+        }
     }
+},{
+    initialRouteName:'Home'
 })
 
 const DrawerStack = createDrawerNavigator({
@@ -76,5 +81,6 @@ const SwitchNavigator = createSwitchNavigator({
 },{
     initialRouteName:'Auth'
 })
+
 
 export default createAppContainer(SwitchNavigator)
