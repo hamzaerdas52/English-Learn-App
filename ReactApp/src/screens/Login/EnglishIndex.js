@@ -30,7 +30,6 @@ import { Root, Popup } from 'popup-ui'
 
 import EyeAnimation from '../../components/animationComponents/eyeAnimation';
 import UrlIndex from '../../methods/url'
-import LoginUser from '../../methods/loginUser'
 
 import Token from '../../methods/token'
 import SetLanguage from '../../methods/setLanguage'
@@ -62,7 +61,7 @@ export default class Login extends Component {
         }
         this.eyeAnimation = new Animated.Value(0)
     }
-    
+
     popUp = (type, title, text) => {
         Popup.show({
             type: type,
@@ -76,12 +75,11 @@ export default class Login extends Component {
         })
     }
 
-    componentDidMount(){
+    componentDidMount() {
         AsyncStorage.getItem("Language").then((res) => {
-            if(res == "Tr") {this.setState({languageEn:false})}
+            if (res == "Tr") { this.setState({ language: false }) }
         })
     }
-
 
     onGoogleButtonPress = async () => {
         // Get the users ID token
@@ -170,7 +168,7 @@ export default class Login extends Component {
                         this.props.navigation.navigate('Home')
                     }, 2000)
             })
-            .catch((error) => alert(error.response.data['Error Message']))
+            .catch((error) => this.popUp("Danger","Username or password is wrong"))
     }
 
     render() {
@@ -184,11 +182,19 @@ export default class Login extends Component {
                             <View style={style.flag_view}>
                                 <TouchableOpacity
                                     onPress={() => {
+                                        //this.setState({languageEn:!languageEn})
                                         this.props.navigation.navigate('TrLogin')
+                                        //languageEn ? SetLanguage("Tr") : SetLanguage("En")
                                         SetLanguage("Tr")
                                     }}
                                 >
+                                    {/* {(languageEn == true) ?
                                     <Image style={style.flag} source={require('../../image/turkey.png')} />
+                                    :
+                                    <Image style={style.flag} source={require('../../image/united-kingdom.png')} /> */}
+
+                                    <Image style={style.flag} source={require('../../image/turkey.png')} />
+                                
                                 </TouchableOpacity>
                             </View>
                             <View style={style.logo_area}>
@@ -199,7 +205,7 @@ export default class Login extends Component {
                             </View>
 
                             <View style={style.signUp}>
-                                <Text style={style.signUpText}>Login</Text>
+                                <Text style={style.signUpText}>{languageEn ? "Login" : "Giriş Yap"}</Text>
                             </View>
                         </View>
                         <View style={style.footer}>

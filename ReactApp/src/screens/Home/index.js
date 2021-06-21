@@ -33,13 +33,58 @@ import Icon from 'react-native-vector-icons/FontAwesome5'
 import UrlIndex from '../../methods/url';
 import CategoryItem from '../../components/AppComponents/CategoryItem'
 
+
+const FetchCategories = [
+    {
+        image: 'paw',
+        title: 'Hayvanlar'
+    },
+    {
+        image: 'clock',
+        title: 'Zaman'
+    },
+    {
+        image: 'utensils',
+        title: 'Yiyecek ve İçecekler'
+    },
+    {
+        image: 'couch',
+        title: 'Nesneler / Eşyalar'
+    },
+    {
+        image: 'snowboarding',
+        title: 'Eylemler'
+    },
+    {
+        image: 'user-md',
+        title: 'Meslekler'
+    },
+    {
+        image: 'tshirt',
+        title: 'Giyim'
+    },
+    {
+        image: 'paw',
+        title: 'Aile'
+    },
+    {
+        image: 'paw',
+        title: 'Genel'
+    },
+]
+var images = FetchCategories.map((img) => ({
+    image: img.image,
+    title: img.title
+}))
+
 export default class Home extends Component {
 
     constructor() {
         super()
         this.state = {
             category: [],
-            loading: false
+            loading: false,
+            images: images
         }
     }
 
@@ -61,16 +106,21 @@ export default class Home extends Component {
             headers: { token }
         })
             .then((res) => {
+                console.log(res)
                 var category = []
                 res.data.forEach((item) => {
                     category.push({
-                        name: item.name,
+                        name: item.turkish_name,
                         id: item.id
                     })
                 })
                 this.setState({ category: category, loading:true })
+                console.log(this.state.category)
             })
-            .catch((error) => console.log(error.response.data))
+            .catch((error) => {
+                console.log(error.response.data),
+                this.props.navigation.navigate("EnLogin")
+                })
     }
 
     _renderItem = ({ item }) => {
@@ -106,17 +156,19 @@ export default class Home extends Component {
                         <FlatList
                             style={style.category}
                             data={category}
+                            //data = {["Hayvanlar","Zaman","Yiyecek ve İçecekler","Nesneler / Eşyalar","Eylemler","Meslekler","Giyim","Aile","Genel"]}                            
+                            //data = {images}
                             renderItem={this._renderItem}
                             numColumns={3}
                         />
                     </View>
                 </View>
-                :
+                 : 
                 <View style={style.loading_area}>
                     <BallIndicator color={"#265fca"} size={60}/>
                     <Text style={style.loading_text}>Yükleniyor</Text>
                 </View>
-                }
+                } 
             </View>
         )
     }
@@ -131,7 +183,7 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '6%',
+        height: hp('7%'),
         backgroundColor: '#498adc'
 
     },
@@ -146,14 +198,14 @@ const style = StyleSheet.create({
     menü_button: {
     },
     category: {
-        marginTop: '6%',
+        marginTop: hp("10%"),
         paddingHorizontal: '5%'
     },
     kategori_text_area: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '4%'
+        marginTop: hp('6%')
     },
     kategori_text: {
         fontSize: 20,

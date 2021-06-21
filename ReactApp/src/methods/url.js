@@ -1,5 +1,5 @@
 const UrlIndex = () => {
-    const url = 'http://app-env.eba-4snnnhme.us-east-1.elasticbeanstalk.com/';
+    const url = 'https://wordlib-nljjyzhssa-lm.a.run.app/';
     return url;
 }
 

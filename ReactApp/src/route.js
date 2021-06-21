@@ -64,8 +64,6 @@ const AppStack = createStackNavigator({
             headerShown:false
         }
     }
-},{
-    initialRouteName:'Home'
 })
 
 const DrawerStack = createDrawerNavigator({
