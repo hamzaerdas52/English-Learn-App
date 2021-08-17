@@ -125,7 +125,7 @@ export default class Register extends Component {
 
     isEquels = (values) => {
         if (values.password == values.password2) {
-            if (values.fullName == '' || values.email == '' || values.password == '' || values.password2 == '') {
+            if (values.fullName == '' || values.email == '' || values.password == '') {
                 //alert('Please Fill All')
                 this.popUp("Warning", "Warning", "Please Fill All")
             }
@@ -146,15 +146,14 @@ export default class Register extends Component {
             data: {
                 'username': values.fullName,
                 'email': values.email,
-                'password': values.password,
-                'password2': values.password2
+                'password': values.password
             }
         })
             .then((res) => {
                 console.log(res)
                 this.popUp("Success", "Success", "Please confirm the mail to your email address.")
             })
-            .catch((error) => console.log('Hata ' + error.response.data.message))
+            .catch((error) => console.log('Hata ' + error.response.data))
     }
 
     render() {

@@ -168,7 +168,7 @@ export default class Login extends Component {
                         this.props.navigation.navigate('Home')
                     }, 2000)
             })
-            .catch((error) => this.popUp("Danger","Username or password is wrong"))
+            .catch((error) => {console.log(error), this.popUp("Danger","Username or password is wrong")})
     }
 
     render() {

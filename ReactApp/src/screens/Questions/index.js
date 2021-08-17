@@ -47,17 +47,18 @@ export default class index extends Component {
             id: this.props.navigation.getParam("id"),
             progress: 0.1,
             token: '',
-            question_number: 10,
+            question_number: 20,
             words: [],
             word: '',
             word_number: -1,
-            answer_true: '',
-            answers_wrong: [],
-            a_state: "",
-            b_state: "",
-            c_state: "",
-            d_state: "",
-            sayi: 0,
+            answers: [],
+            trues: 0,
+            falses: 0,
+            nulls: 0,
+            a_: "",
+            b_: "",
+            c_: "",
+            d_: ""
         }
     }
 
@@ -72,6 +73,7 @@ export default class index extends Component {
             timing: 2000,
             callback: () => {
                 Popup.hide()
+                this.refs.modal_finish.open()
                 if (play == true) {
                     this.setState({ playing: true })
                 }
@@ -84,8 +86,10 @@ export default class index extends Component {
         await AsyncStorage.getItem('User_Token').then((res) => {
             this.setState({ token: res })
         })
-        const url = UrlIndex + 'word/turkish/random/' + this.state.id + '/' + this.state.question_number
-        const url1 = UrlIndex + 'word/turkish/random/' + this.state.id + '/' + 30
+
+        /* /exam/english/category/id */
+
+        const url = UrlIndex + 'exam/english/category/' + this.state.id
         const token = this.state.token
         axios({
             method: 'GET',
@@ -93,40 +97,10 @@ export default class index extends Component {
             headers: { token }
         })
             .then((res) => {
-                var words = []
-                var true_word;
-                res.data.forEach((item) => {
-                    item.english_words.forEach((a) => { true_word = a.word })
-                    words.push({
-                        word: item.word,
-                        id: item.id,
-                        true: true_word
-                    })
-                })
+                console.log(res)
+                var words = res.data
                 this.setState({ words })
                 this.updateWord()
-                this.randomNumber
-            })
-            .catch((e) => {
-                console.log(e)
-            })
-
-        axios({
-            method: 'GET',
-            url: url1,
-            headers: { token }
-        })
-            .then((res) => {
-                var wrong_word = [];
-                res.data.forEach((item) => {
-                    item.english_words.forEach((a) => {
-                        wrong_word.push({
-                            wrong: a.word
-                        })
-                    })
-                })
-                this.setState({ answers_wrong: wrong_word})
-                this.updateChoice()
             })
             .catch((e) => {
                 console.log(e)
@@ -137,7 +111,6 @@ export default class index extends Component {
         if (this.state.progress < 0.9) {
             await this.setState({ progress: this.state.progress + 0.1 })
         }
-
     }
 
     Decrease = async () => {
@@ -145,80 +118,57 @@ export default class index extends Component {
     }
 
     updateWord = async () => {
-
         if (this.state.word_number == this.state.question_number - 1) {
-            this.popUp("Warning", "Tamamlandı", "", "false")
+            var dogru = 0, yanlis = 0, nulls = 0;
+            for (i = 0; i <= this.state.answers.length - 1; i++) {
+                if (this.state.answers[i] == true) {
+                   this.state.trues += 1
+                }
+                else if (this.state.answers[i] == false) {
+                    this.state.falses += 1
+                }
+                else if (this.state.answers[i] == null) {
+                    this.state.nulls += 1
+                }
+            }
+            this.popUp("Warning", "Tamamlandı", " ","false")
             this.setState({ playing: false })
         }
         else {
             await this.setState({ word_number: this.state.word_number + 1 })
             await this.setState({
                 word: this.state.words[this.state.word_number].word,
-                answer_true: this.state.words[this.state.word_number].true
+                choices: this.state.words[this.state.word_number].options
+            })
+            await this.setState({
+                a_: this.state.choices[0].word,
+                b_: this.state.choices[1].word,
+                c_: this.state.choices[2].word,
+                d_: this.state.choices[3].word,
             })
         }
     }
 
-    updateChoice = async () => {
-        var sayi = await this.state.sayi
-        if (sayi == 1) {
-            await this.setState({
-                a_state: await this.state.answer_true,
-                b_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                c_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                d_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong
-            })
-        }
-        if (sayi == 2) {
-            await this.setState({
-                a_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                b_state: await this.state.answer_true,
-                c_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                d_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong
-            })
-        }
-        if (sayi == 3) {
-            await this.setState({
-                a_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                b_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                c_state: await this.state.answer_true,
-                d_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong
-            })
-        }
-        else {
-            await this.setState({
-                a_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                b_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                c_state: await this.state.answers_wrong[Math.floor(Math.random() * 29) + 1].wrong,
-                d_state: await this.state.answer_true
-            })
-        }
+    ChoiceCheck = async (choice) => {
+        await this.state.answers.push(this.state.choices[choice].is_correct)
+        console.log(this.state.answers)
+    }
+
+    nullDeger = async () => {
+        await this.state.answers.push(null)
     }
 
     returnWord = async () => {
         await this.setState({ word_number: this.state.word_number - 1 })
-        console.log(this.state.word_number)
         await this.setState({
             word: this.state.words[this.state.word_number].word,
             answer_true: this.state.words[this.state.word_number].true
         })
-        console.log(this.state.word)
-
-    }
-
-    randomNumber = () => {
-        var sayi = Math.floor(Math.random() * 4) + 1
-        this.setState({ sayi: sayi })
-    }
-
-    randomNumberArray = (boyut, deger) => {
-
     }
 
     render() {
-        const { title, word, a_state, b_state, c_state, d_state, loading } = this.state
+        const { title, word, a_, b_, c_, d_ } = this.state
         return (
-            
             <Root>
                 <View style={style.body}>
                     <View style={style.header}>
@@ -237,23 +187,12 @@ export default class index extends Component {
                         </TouchableOpacity>
                     </View>
                     < ModalBox
-                        //Kaydırarak kapatma
                         swipeToClose={false}
-
-                        //Açılıp kapanma
                         onClosed={() => this.setState({ playing: true })}
-                        // onOpened={() => alert('Açıldı')}
                         style={style.modal}
-
-                        //Pozisyon
                         position={'center'}
-
-                        //Kutucuğun nerden geleceği
                         entry={'top'}
-
-                        //Aktifleştirme
                         isDisabled={false}
-
                         backdrop={true}
                         ref={'modal'}
                     >
@@ -274,7 +213,7 @@ export default class index extends Component {
                             isPlaying={this.state.playing}
                             size={hp("13%")}
                             strokeWidth={7}
-                            duration={30}
+                            duration={60}
                             colors={[
                                 ["green", 0.5],
                                 ["yellow", 0.5],
@@ -298,45 +237,61 @@ export default class index extends Component {
                     </View>
                     <View style={style.options}>
                         <View style={style.buttons}>
-                            <TouchableOpacity style={style.button}>
-                                <Text style={style.button_text}>{a_state}</Text>
+                            <TouchableOpacity
+                                style={style.button}
+                                onPress={() => {
+                                    this.ChoiceCheck('0'),
+                                        this.Increase(),
+                                        this.updateWord()
+                                }}
+                            >
+                                <Text style={style.button_text}>{a_}</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={style.buttons}>
-                            <TouchableOpacity style={style.button}>
-                                <Text style={style.button_text}>{b_state}</Text>
+                            <TouchableOpacity
+                                style={style.button}
+                                onPress={() => {
+                                    this.ChoiceCheck('1'),
+                                        this.Increase(),
+                                        this.updateWord()
+                                }}
+                            >
+                                <Text style={style.button_text}>{b_}</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={style.buttons}>
-                            <TouchableOpacity style={style.button}>
-                                <Text style={style.button_text}>{c_state}</Text>
+                            <TouchableOpacity
+                                style={style.button}
+                                onPress={() => {
+                                    this.ChoiceCheck('2'),
+                                        this.Increase(),
+                                        this.updateWord()
+                                }}
+                            >
+                                <Text style={style.button_text}>{c_}</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={style.buttons}>
-                            <TouchableOpacity style={style.button}>
-                                <Text style={style.button_text}>{d_state}</Text>
+                            <TouchableOpacity
+                                style={style.button}
+                                onPress={() => {
+                                    this.ChoiceCheck('3'),
+                                        this.Increase(),
+                                        this.updateWord()
+                                }}
+                            >
+                                <Text style={style.button_text}>{d_}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={style.arrow_area}>
-                        {(this.state.word_number > 0) ?
-                            <View>
-                                <TouchableOpacity onPress={() => {
-                                    this.Decrease(),
-                                        this.returnWord()
-                                }}>
-                                    <Icon name="arrow-circle-left" size={arrow_size} color={arrow_color} />
-                                </TouchableOpacity>
-                            </View>
-                            :
-                            <View></View>
-                        }
+                        <View></View>
                         <View>
                             <TouchableOpacity onPress={() => {
                                 this.Increase(),
                                     this.updateWord(),
-                                    this.randomNumber(),
-                                    this.updateChoice()
+                                    this.nullDeger()
                             }}>
                                 <Icon name="arrow-circle-right" size={arrow_size} color={arrow_color} />
                             </TouchableOpacity>
@@ -355,6 +310,28 @@ export default class index extends Component {
                         />
 
                     </View>
+                    < ModalBox
+                        swipeToClose={false}
+                        style={style.modal}
+                        position={'center'}
+                        entry={'right'}
+                        isDisabled={false}
+                        backdrop={true}
+                        ref={'modal_finish'}
+                    >
+                        <View style={style.modal_text}>
+                            <Text style={style.modal_text_1}>Doğru sayınız: {this.state.trues}</Text>
+                            <Text style={style.modal_text_1}>Yanlış sayınız: {this.state.falses}</Text>
+                            <Text style={style.modal_text_1}>Boş sayınız: {this.state.nulls}</Text>
+                            <TouchableOpacity
+                                style={style.modal_btn}
+                                onPress={() => {
+                                    this.props.navigation.navigate("Home")
+                                }}>
+                                <Text style={style.modal_btn_text}>Kapat</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ModalBox>
                 </View>
             </Root >
 
@@ -425,8 +402,8 @@ const style = StyleSheet.create({
     },
     button: {
         borderWidth: 1,
-        width: wp("35%"),
-        height: hp("6%"),
+        width: wp("45%"),
+        height: hp("8%"),
         borderRadius: 10,
         justifyContent: "center",
         alignItems: "center",
@@ -450,6 +427,7 @@ const style = StyleSheet.create({
     },
     modal_text_1: {
         fontSize: hp("2.5%"),
+        color: "white"
     },
     modal_btn: {
         justifyContent: "center",

@@ -13,7 +13,7 @@ export default class App extends Component {
     componentDidMount() {
         AsyncStorage.getItem('User_Token').then((res) => {
             const user_token = res
-            const url = UrlIndex + 'token-check'
+            const url = UrlIndex + 'tokencheck'
             axios({
                 method: 'POST',
                 url: url,
